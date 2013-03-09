@@ -25,7 +25,7 @@ module Sinatra
       provider = IMS::LTI::ToolProvider.new(key, secret, params)
       session.clear
       if provider.valid_request?(request)
-        user_id = params['custom_canvas_user_id']
+        user_id = params['custom_canvas_user_id'] || params['user_id']
         # find or create user/activity record, including grade passback url
         session["user_id"] = user_id
         session["key"] = Samplers.random_string(true)

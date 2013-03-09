@@ -30,7 +30,7 @@ end
 
 def load_user
   if !session['user_id']
-    halt error("Session lost" + session.to_a.to_json)
+    halt error("Session lost")
   end
 end
 
