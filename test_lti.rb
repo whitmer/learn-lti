@@ -14,6 +14,9 @@ require './lib/validation.rb'
 require './lib/lesson_launch.rb'
 require './lib/lessons.rb'
 
+# sinatra wants to set x-frame-options by default, disable it
+disable :protection
+
 enable :sessions
 
 get '/' do
