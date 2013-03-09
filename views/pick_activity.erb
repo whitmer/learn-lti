@@ -11,11 +11,11 @@
 <ul class="nav nav-pills nav-stacked" id="activities">
 <% Activity.all.each do |activity| %>
   <% text = Nokogiri::HTML(activity.intro).text %>
-  <% activity_url = host + "/launch/#{activity.id}/0"
+  <% activity_url = host + "/launch/#{activity.id}"
     if local_launch
       url = activity_url
     else
-      url = return_url + "&embed_type=basic_lti&url=" + CGI.escape(activity_url)
+      url = return_url + "&embed_type=basic_lti&title=#{activity.id}&text=#{activity.id}&url=" + CGI.escape(activity_url)
     end
   %>
   <li>
