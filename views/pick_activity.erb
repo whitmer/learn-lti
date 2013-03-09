@@ -1,0 +1,29 @@
+<% return_url = params['return_url'] || "#{host}/"
+  return_url += "?" unless return_url.match(/\?/) 
+  local_launch = return_url == "#{host}/?"
+%>
+<h2>Pick an Activity</h2>
+<% if local_launch %>
+  <p>Which activity would you like to start learning about?</p>
+<% else %>
+  <p>Which activity would you like to embed here?</p>
+<% end %>
+<ul class="nav nav-pills nav-stacked" id="activities">
+<% Activity.all.each do |activity| %>
+  <% text = Nokogiri::HTML(activity.intro).text %>
+  <% activity_url = host + "/launch/#{activity.id}"
+    if local_launch
+      url = activity_url
+    else
+      url = return_url + "&embed_type=basic_lti&url=" + CGI.escape(activity_url)
+    end
+  %>
+  <li>
+    <a href="<%= url %>">
+      <%= activity.id %>
+      <span class="description"><%= text %></span>
+      <span class="stats"><%= activity.tests.length %> Lessons</span>
+    </a>
+  </li>
+<% end %>
+</ul>

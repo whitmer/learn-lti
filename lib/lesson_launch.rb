@@ -34,9 +34,13 @@ module Sinatra
         # check if they're a teacher or not
         # session["permission_for_#{params['custom_canvas_course_id']}"] = 'edit' if provider.roles.include?('instructor') || provider.roles.include?('contentdeveloper') || provider.roles.include?('urn:lti:instrole:ims/lis/administrator') || provider.roles.include?('administrator')
         
-        activity = Activity.find(params['activity'])
-        return error("Invalid activity") unless activity
-        redirect to("/launch/#{params['activity']}/0")
+        if params['activity'] == 'init'
+           redirect to("/pick_activity?return_url=" + CGI.escape(params['launch_presentation_return_url']))
+        else        
+          activity = Activity.find(params['activity'])
+          return error("Invalid activity") unless activity
+          redirect to("/launch/#{params['activity']}/0")
+        end
       else
         return error("Invalid tool launch - invalid parameters")
       end

@@ -20,10 +20,19 @@ get '/' do
   erb :index
 end
 
-def load_user_and_activity
+get '/config.xml' do
+  response.headers['Content-Type'] = "text/xml"
+  erb :config_xml, :layout => false
+end
+
+def load_user
   if !session['user_id']
     halt error("Session lost")
   end
+end
+
+def load_user_and_activity
+  load_user
   @index = params[:index].to_i
   @activity = Activity.find(params['activity'])
   halt error("Invalid activity") if !@activity || !@activity.tests[@index]

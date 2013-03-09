@@ -4,3 +4,15 @@
 .pagination { 
   margin-bottom: 0;
 }
+#activities li {
+  font-size: 14px;
+  font-weight: bold;
+}
+#activities li span {
+  display: block;
+  font-size: 10px;
+  max-width: 400px;
+  padding-left: 10px;
+  font-weight: normal;
+  color: #444;
+}

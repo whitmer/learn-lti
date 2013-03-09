@@ -5,6 +5,11 @@ module Sinatra
       erb :activity
     end
     
+    get "/pick_activity" do
+      load_user
+      erb :pick_activity
+    end
+    
     post '/test/:activity/:index' do
       load_user_and_activity
       if !params['launch_url']
