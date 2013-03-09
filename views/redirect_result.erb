@@ -1,0 +1,64 @@
+<% if @res[:correct] %>
+  <h2>Successfully redirected back!</h2>
+  <p>Well done, you successfully returned to the 
+  correct URL with the correct parameters. You should
+  see the status of your launch update shortly.</p>
+<% else %>
+  <h2>Incorrect redirect.</h2>
+  <p>Sorry, you either returned to the wrong URL or
+  did not include the correct return parameters. 
+  You should
+  see the status of your launch update shortly.</p>
+<% end %>
+<% if params['lti_msg'] %>
+  <div class='alert alert-info'>
+    Return message:<br/>
+    <%= params['lti_msg'] %>
+  </div>
+<% end %>
+<% if params['lti_log'] %>
+  <div class='alert alert-error'>
+    Log message (normally the user wouldn't see this):<br/>
+    <%= params['lti_log'] %>
+  </div>
+<% end %>
+<% if params['lti_errormsg'] %>
+  <div class='alert alert-error'>
+    Return message:<br/>
+    <%= params['lti_errormsg'] %>
+  </div>
+<% end %>
+<% if params['lti_errorlog'] %>
+  <div class='alert alert-error'>
+    Log message (normally the user wouldn't see this):<br/>
+    <%= params['lti_errorlog'] %>
+  </div>
+<% end %>
+<% if params['embed_type'] %>
+  <div class='well'>
+    <h2>Content returned!</h2>
+    <% if params['embed_type'] == 'image' %>
+      Image:<br/>
+      <img src="<%= params['url'] %>" style="width: <%= params['width'] %>px; height: <%= params['height'] %>px;" alt="<%= params['alt'] %>"/>
+    <% elsif params['embed_type'] == 'iframe' %>
+      Iframe:<br/>
+      <iframe src="<%= params['url'] %>" style="width: <%= params['width'] %>px; height: <%= params['height'] %>px; border: 1px solid #eee;" title="<%= params['title'] %>" framborder="0"></iframe>
+    <% elsif params['embed_type'] == 'link' %>
+      Link:<br/>
+      <a href="<%= params['url'] %>"><%= params['text'] %></a>
+    <% elsif params['embed_type'] == 'file' %>
+      File:<br/>
+      <a href="<%= params['url'] %>"> <%= params['text'] %> (<%= params['content_type'] %>)</a>
+    <% elsif params['embed_type'] == 'basic_lti' %>
+      LTI Launch:<br/>
+      URL: <%= params['url'] %>
+    <% elsif params['embed_type'] == 'oembed' %>
+      OEmbed:<br/>
+      URL: <%= params['url'] %><br/>
+      Endpoint: <%= params['endpoint'] %>
+    <% else %>
+      Unrecognized embed type
+    <% end %>
+  </div>
+<% end %>
+<textarea style="display: none;" id="result_data"><%= @res.to_json %></textarea>
