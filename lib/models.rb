@@ -13,7 +13,6 @@ class LtiConfig
   property :shared_secret, String, :length => 1024
   
   def self.generate(name)
-    Launch.all(:created_at.gt => (Date.today - 21)).destroy
     conf = LtiConfig.new
     conf.app_name = name
     conf.consumer_key = Digest::MD5.hexdigest(Time.now.to_i.to_s + rand.to_s)
@@ -37,6 +36,7 @@ class Launch
   property :status, String
   
   def self.generate(key, secret, sourced_id, expected_score, text, url)
+    Launch.all(:created_at.gt => (Date.today - 21)).destroy
     Launch.create(:consumer_key => key, :shared_secret => secret, :sourced_id => sourced_id, :expected_score => expected_score.to_s, :submission_text => text, :submission_url => url, :created_at => Time.now)
   end
   
