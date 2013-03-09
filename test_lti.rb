@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'ims/lti'
+require 'ims/lti/extensions'
 require 'digest/md5'
 # must include the oauth proxy object
 require 'oauth/request_proxy/rack_request'

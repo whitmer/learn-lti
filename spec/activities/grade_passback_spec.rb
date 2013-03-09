@@ -138,8 +138,38 @@ describe 'Grade Passback Activity' do
     json['correct'].should == true
   end
   
-  it "should support submission content extensions" do
-    false.should == true
+  it "should support submission text" do
+    get "/fake_launch"
+    get "/launch/grade_passback/4", {}, 'rack.session' => {"farthest_for_grade_passback" => 10}
+    post "/test/grade_passback/4", {'launch_url' => 'http://www.example.com/launch'}
+    html = Nokogiri::HTML(last_response.body)
+    html.css("input[name='lis_result_sourcedid']").length.should == 1
+    sourced_id = html.css("input[name='lis_result_sourcedid']")[0]['value']
+    
+    IMS::LTI::ToolConsumer.any_instance.should_receive(:valid_request?).and_return(true)
+    
+    launch = Launch.last
+    post "/grade_passback/#{launch.id}", good_xml_with_text(sourced_id, "0.78", "The law will judge you!")
+    post "/validate/grade_passback/4"
+    json = JSON.parse(last_response.body)
+    json['correct'].should == true
+  end
+  
+  it "should support submission url" do
+    get "/fake_launch"
+    get "/launch/grade_passback/5", {}, 'rack.session' => {"farthest_for_grade_passback" => 10}
+    post "/test/grade_passback/5", {'launch_url' => 'http://www.example.com/launch'}
+    html = Nokogiri::HTML(last_response.body)
+    html.css("input[name='lis_result_sourcedid']").length.should == 1
+    sourced_id = html.css("input[name='lis_result_sourcedid']")[0]['value']
+    
+    IMS::LTI::ToolConsumer.any_instance.should_receive(:valid_request?).and_return(true)
+    
+    launch = Launch.last
+    post "/grade_passback/#{launch.id}", good_xml_with_url(sourced_id, "0.56", "http://www.example.com/horcruxes/8")
+    post "/validate/grade_passback/5"
+    json = JSON.parse(last_response.body)
+    json['correct'].should == true
   end
   
   def good_xml(sourced_id, score)
@@ -169,5 +199,17 @@ describe 'Grade Passback Activity' do
   </imsx_POXBody>
 </imsx_POXEnvelopeRequest>
     EOF
+  end
+  
+  def good_xml_with_url(sourced_id, score, url)
+    xml = good_xml(sourced_id, score)
+    a, b = xml.split(/<\/resultScore>/)
+    a + "</resultScore><resultData><url>#{url}</url></resultData>" + b
+  end
+  
+  def good_xml_with_text(sourced_id, score, text)
+    xml = good_xml(sourced_id, score)
+    a, b = xml.split(/<\/resultScore>/)
+    a + "</resultScore><resultData><text>#{text}</text></resultData>" + b
   end
 end

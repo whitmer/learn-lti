@@ -55,7 +55,7 @@ grade_passback = Activity.add(:grade_passback)
     <p>Very good. Now send over a score of 0.43</p>
   EOF
 
-  grade_passback.add_grade_test :submission_text, :assignment => true, :submission_text => "The law will judge you!", :explanation => <<-EOF
+  grade_passback.add_grade_test :submission_text, :assignment => true, :score => "any", :submission_text => "The law will judge you!", :explanation => <<-EOF
     <p>There's also the option within Canvas to send submission content
     in addition to a scalar score value. You can see an example of this
     on our <a href="https://lti-examples.heroku.com/build_outcome.html">outcome
@@ -65,7 +65,7 @@ grade_passback = Activity.add(:grade_passback)
     <p>For this test, send <code>The law will judge you!</code> as the
     <code>resultData &gt; text</code> content.</p>
   EOF
-  grade_passback.add_grade_test :submission_url, :assignment => true, :submission_url => "http://www.example.com/horcruxes/8", :explanation => <<-EOF
+  grade_passback.add_grade_test :submission_url, :assignment => true, :score => "any", :submission_url => "http://www.example.com/horcruxes/8", :explanation => <<-EOF
     <p>Now send <code>http://www.example.com/horcruxes/8</code> as
     the <code>resultData &gt; url</code> content.</p>
   EOF

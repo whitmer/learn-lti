@@ -7,7 +7,9 @@ module Sinatra
       # Or you can parse the XML that was sent and get the lis_result_sourcedid which
       # was set at launch time and look up the tool using that somehow.
     
-      req = IMS::LTI::OutcomeRequest.from_post_request(request)
+      req = IMS::LTI::OutcomeRequest.new
+      req.extend IMS::LTI::Extensions::OutcomeData::OutcomeRequest
+      req.process_post_request(request)
       sourcedid = req.lis_result_sourcedid
     
       # todo - create some simple key management system
@@ -31,7 +33,6 @@ module Sinatra
         res.code_major = 'success'
         res.severity = 'status'
     
-        req = IMS::LTI::OutcomeRequest.from_post_request(request)
         if launch.sourced_id != req.lis_result_sourcedid
           res.code_major = 'unsupported'
           res.severity = 'status'
@@ -49,7 +50,7 @@ module Sinatra
           res.severity = 'status'
           res.description = "#{req.operation} is not supported"
         end
-        launch.score_received(req.lis_result_sourcedid, req.score, nil, nil) #req.outcome_text, req.outcome_url)
+        launch.score_received(req.lis_result_sourcedid, req.score, req.outcome_text, req.outcome_url)
     
         headers 'Content-Type' => 'text/xml'
         res.generate_response_xml
