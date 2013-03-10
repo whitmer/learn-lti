@@ -58,8 +58,7 @@ module Sinatra
         if res[:correct]
           session["answer_count_for_#{params['activity']}_#{@index}"] ||= 0
           session["answer_count_for_#{params['activity']}_#{@index}"] += 1
-          session["farthest_for_#{params['activity']}"] ||= @index
-          session["farthest_for_#{params['activity']}"] = [@index, session["farthest_for_#{params['activity']}"]].max
+          @user.set_farthest(params['activity'], @index)
           if @test[:args][:iterations] && @test[:args][:iterations] > session["answer_count_for_#{params['activity']}_#{@index}"] 
             res[:times_left] = @test[:args][:iterations] - session["answer_count_for_#{params['activity']}_#{@index}"]
           else

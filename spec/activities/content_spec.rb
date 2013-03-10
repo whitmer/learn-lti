@@ -9,8 +9,8 @@ describe 'Content Extensions Activity' do
   end
   
   it "should succeed with the correct parameters" do
-    get "/fake_launch"
-    get "/launch/content_test/4", {}, 'rack.session' => {"farthest_for_content_test" => 10}
+    fake_launch({"farthest_for_content_test" => 10})
+    get "/launch/content_test/4", {}
     post "/test/content_test/4", {'launch_url' => 'http://www.example.com/launch'}
     html = Nokogiri::HTML(last_response.body)
     html.css("input[name='launch_presentation_return_url']").length.should == 1
@@ -24,8 +24,8 @@ describe 'Content Extensions Activity' do
   end
   
   it "should succeed even with extra parameters" do
-    get "/fake_launch"
-    get "/launch/content_test/4", {}, 'rack.session' => {"farthest_for_content_test" => 10}
+    fake_launch({"farthest_for_content_test" => 10})
+    get "/launch/content_test/4", {}
     post "/test/content_test/4", {'launch_url' => 'http://www.example.com/launch'}
     html = Nokogiri::HTML(last_response.body)
     html.css("input[name='launch_presentation_return_url']").length.should == 1
@@ -39,8 +39,8 @@ describe 'Content Extensions Activity' do
   end
   
   it "should fail with incorrect parameters" do
-    get "/fake_launch"
-    get "/launch/content_test/4", {}, 'rack.session' => {"farthest_for_content_test" => 10}
+    fake_launch({"farthest_for_content_test" => 10})
+    get "/launch/content_test/4", {}
     post "/test/content_test/4", {'launch_url' => 'http://www.example.com/launch'}
     html = Nokogiri::HTML(last_response.body)
     html.css("input[name='launch_presentation_return_url']").length.should == 1
@@ -54,8 +54,8 @@ describe 'Content Extensions Activity' do
   end
   
   it "should fail with no parameters" do
-    get "/fake_launch"
-    get "/launch/content_test/4", {}, 'rack.session' => {"farthest_for_content_test" => 10}
+    fake_launch({"farthest_for_content_test" => 10})
+    get "/launch/content_test/4", {}
     post "/test/content_test/4", {'launch_url' => 'http://www.example.com/launch'}
     html = Nokogiri::HTML(last_response.body)
     html.css("input[name='launch_presentation_return_url']").length.should == 1

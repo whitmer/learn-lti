@@ -30,7 +30,8 @@ get '/config.xml' do
 end
 
 def load_user
-  if !session['user_id']
+  @user = User.first(:user_id => session['user_id'])
+  if !session['user_id'] || !@user
     halt error("Session lost")
   end
 end
@@ -40,8 +41,8 @@ def load_user_and_activity
   @index = params[:index].to_i
   @activity = Activity.find(params['activity'])
   halt error("Invalid activity") if !@activity || !@activity.tests[@index]
-  @next_enabled = @activity.tests[@index + 1] && session["farthest_for_#{params['activity']}"] && session["farthest_for_#{params['activity']}"] >= @index
-  if @index > (session["farthest_for_#{params['activity']}"] || -1) + 1
+  @next_enabled = @activity.tests[@index + 1] && @user.farthest_for(params['activity']) >= @index
+  if @index > @user.farthest_for(params['activity']) + 1
     halt error("Too far too soon!")
   end
   @test = @activity.tests[@index]

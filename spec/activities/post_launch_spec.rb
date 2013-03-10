@@ -9,7 +9,7 @@ describe 'POST Launch Activity' do
   end
 
   it "should allow testing for a paramter" do
-    get "/fake_launch"
+    fake_launch
     get "/launch/post_launch/0"
     post "/test/post_launch/0", {'launch_url' => 'http://www.example.com/launch'}
     post "/validate/post_launch/0", {'answer' => 'basic-lti-launch-request'}
@@ -20,7 +20,7 @@ describe 'POST Launch Activity' do
   end
   
   it "should error on incorrect answer" do
-    get "/fake_launch"
+    fake_launch
     get "/launch/post_launch/0"
     post "/test/post_launch/0", {'launch_url' => 'http://www.example.com/launch'}
     post "/validate/post_launch/0", {'answer' => 'ice-cream'}
@@ -31,7 +31,7 @@ describe 'POST Launch Activity' do
   end
   
   it "should error on repeated attempts" do
-    get "/fake_launch"
+    fake_launch
     get "/launch/post_launch/0"
     post "/test/post_launch/0", {'launch_url' => 'http://www.example.com/launch'}
     post "/validate/post_launch/0", {'answer' => 'ice-cream'}
@@ -46,8 +46,8 @@ describe 'POST Launch Activity' do
   end
   
   it "should allow testing custom fields if a value is provided" do
-    get "/fake_launch"
-    get "/launch/post_launch/11", {}, 'rack.session' => {'farthest_for_post_launch' => 20}
+    fake_launch({'farthest_for_post_launch' => 20})
+    get "/launch/post_launch/11", {}
     post "/test/post_launch/11", {'launch_url' => 'http://www.example.com/launch'}
     post "/validate/post_launch/11", {'answer' => session["answer_for_post_launch_11"]}
     json = JSON.parse(last_response.body)
@@ -56,8 +56,8 @@ describe 'POST Launch Activity' do
 
   describe "role picking" do
     it "should succeed when correct roles are picked" do
-      get "/fake_launch"
-      get "/launch/post_launch/5", {}, 'rack.session' => {'farthest_for_post_launch' => 20}
+      fake_launch({'farthest_for_post_launch' => 20})
+      get "/launch/post_launch/5", {}
       post "/test/post_launch/5", {'launch_url' => 'http://www.example.com/launch'}
       answer = session["answer_for_post_launch_5"]
       answer.should_not be_nil
@@ -68,8 +68,8 @@ describe 'POST Launch Activity' do
     end
     
     it "should fail when answer is set but not roles" do
-      get "/fake_launch"
-      get "/launch/post_launch/5", {}, 'rack.session' => {'farthest_for_post_launch' => 20}
+      fake_launch({'farthest_for_post_launch' => 20})
+      get "/launch/post_launch/5", {}
       Samplers.should_receive(:random_roles).and_return("Learner,ContentDeveloper")
 
       post "/test/post_launch/5", {'launch_url' => 'http://www.example.com/launch'}
@@ -80,8 +80,8 @@ describe 'POST Launch Activity' do
     end
     
     it "should fail when correct roles are not picked" do
-      get "/fake_launch"
-      get "/launch/post_launch/5", {}, 'rack.session' => {'farthest_for_post_launch' => 20}
+      fake_launch({'farthest_for_post_launch' => 20})
+      get "/launch/post_launch/5", {}
       post "/test/post_launch/5", {'launch_url' => 'http://www.example.com/launch'}
       post "/validate/post_launch/5", {'role' => ['a', 'b']}
       json = JSON.parse(last_response.body)
@@ -95,8 +95,8 @@ describe 'POST Launch Activity' do
   
   describe "iterations" do
     it "should increment on correct answer" do
-      get "/fake_launch"
-      get "/launch/post_launch/5", {}, 'rack.session' => {'farthest_for_post_launch' => 20}
+      fake_launch({'farthest_for_post_launch' => 20})
+      get "/launch/post_launch/5", {}
       post "/test/post_launch/5", {'launch_url' => 'http://www.example.com/launch'}
       answer = session["answer_for_post_launch_5"]
       answer.should_not be_nil
@@ -108,8 +108,8 @@ describe 'POST Launch Activity' do
     end
     
     it "should reset on any failure" do
-      get "/fake_launch"
-      get "/launch/post_launch/5", {}, 'rack.session' => {'farthest_for_post_launch' => 20}
+      fake_launch({'farthest_for_post_launch' => 20})
+      get "/launch/post_launch/5", {}
       post "/test/post_launch/5", {'launch_url' => 'http://www.example.com/launch'}
       answer = session["answer_for_post_launch_5"]
       answer.should_not be_nil
@@ -133,8 +133,8 @@ describe 'POST Launch Activity' do
     end
     
     it "should provide 'next' when iterations are complete" do
-      get "/fake_launch"
-      get "/launch/post_launch/5", {}, 'rack.session' => {'farthest_for_post_launch' => 20}
+      fake_launch({'farthest_for_post_launch' => 20})
+      get "/launch/post_launch/5", {}
       post "/test/post_launch/5", {'launch_url' => 'http://www.example.com/launch'}
       answer = session["answer_for_post_launch_5"]
       answer.should_not be_nil

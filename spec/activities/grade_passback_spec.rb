@@ -9,8 +9,8 @@ describe 'Grade Passback Activity' do
   end
   
   it "should return success message on valid passback" do
-    get "/fake_launch"
-    get "/launch/grade_passback/2", {}, 'rack.session' => {"farthest_for_grade_passback" => 10}
+    fake_launch({"farthest_for_grade_passback" => 10})
+    get "/launch/grade_passback/2", {}
     post "/test/grade_passback/2", {'launch_url' => 'http://www.example.com/launch'}
     html = Nokogiri::HTML(last_response.body)
     html.css("input[name='lis_result_sourcedid']").length.should == 1
@@ -26,8 +26,8 @@ describe 'Grade Passback Activity' do
   end
   
   it "should return error message on incorrect sourcedid" do
-    get "/fake_launch"
-    get "/launch/grade_passback/2", {}, 'rack.session' => {"farthest_for_grade_passback" => 10}
+    fake_launch({"farthest_for_grade_passback" => 10})
+    get "/launch/grade_passback/2", {}
     post "/test/grade_passback/2", {'launch_url' => 'http://www.example.com/launch'}
     html = Nokogiri::HTML(last_response.body)
     html.css("input[name='lis_result_sourcedid']").length.should == 1
@@ -43,8 +43,8 @@ describe 'Grade Passback Activity' do
   end
   
   it "should return error message on invalid passback" do
-    get "/fake_launch"
-    get "/launch/grade_passback/2", {}, 'rack.session' => {"farthest_for_grade_passback" => 10}
+    fake_launch({"farthest_for_grade_passback" => 10})
+    get "/launch/grade_passback/2", {}
     post "/test/grade_passback/2", {'launch_url' => 'http://www.example.com/launch'}
     launch = Launch.last
     
@@ -56,8 +56,8 @@ describe 'Grade Passback Activity' do
   end
   
   it "should succeed on valid passback process" do
-    get "/fake_launch"
-    get "/launch/grade_passback/2", {}, 'rack.session' => {"farthest_for_grade_passback" => 10}
+    fake_launch({"farthest_for_grade_passback" => 10})
+    get "/launch/grade_passback/2", {}
     post "/test/grade_passback/2", {'launch_url' => 'http://www.example.com/launch'}
     html = Nokogiri::HTML(last_response.body)
     html.css("input[name='lis_result_sourcedid']").length.should == 1
@@ -73,8 +73,8 @@ describe 'Grade Passback Activity' do
   end
   
   it "should fail if no passback has yet occurred" do
-    get "/fake_launch"
-    get "/launch/grade_passback/2", {}, 'rack.session' => {"farthest_for_grade_passback" => 10}
+    fake_launch({"farthest_for_grade_passback" => 10})
+    get "/launch/grade_passback/2", {}
     post "/test/grade_passback/2", {'launch_url' => 'http://www.example.com/launch'}
     html = Nokogiri::HTML(last_response.body)
     html.css("input[name='lis_result_sourcedid']").length.should == 1
@@ -88,8 +88,8 @@ describe 'Grade Passback Activity' do
   end
   
   it "should fail on invalid passback process" do
-    get "/fake_launch"
-    get "/launch/grade_passback/2", {}, 'rack.session' => {"farthest_for_grade_passback" => 10}
+    fake_launch({"farthest_for_grade_passback" => 10})
+    get "/launch/grade_passback/2", {}
     post "/test/grade_passback/2", {'launch_url' => 'http://www.example.com/launch'}
     html = Nokogiri::HTML(last_response.body)
     html.css("input[name='lis_result_sourcedid']").length.should == 1
@@ -104,8 +104,8 @@ describe 'Grade Passback Activity' do
   end
   
   it "should fail on incorrect score" do
-    get "/fake_launch"
-    get "/launch/grade_passback/3", {}, 'rack.session' => {"farthest_for_grade_passback" => 10}
+    fake_launch({"farthest_for_grade_passback" => 10})
+    get "/launch/grade_passback/3", {}
     post "/test/grade_passback/3", {'launch_url' => 'http://www.example.com/launch'}
     html = Nokogiri::HTML(last_response.body)
     html.css("input[name='lis_result_sourcedid']").length.should == 1
@@ -122,8 +122,8 @@ describe 'Grade Passback Activity' do
   end
   
   it "should succeed even if decmical range doesn't match" do
-    get "/fake_launch"
-    get "/launch/grade_passback/3", {}, 'rack.session' => {"farthest_for_grade_passback" => 10}
+    fake_launch({"farthest_for_grade_passback" => 10})
+    get "/launch/grade_passback/3", {}
     post "/test/grade_passback/3", {'launch_url' => 'http://www.example.com/launch'}
     html = Nokogiri::HTML(last_response.body)
     html.css("input[name='lis_result_sourcedid']").length.should == 1
@@ -139,8 +139,8 @@ describe 'Grade Passback Activity' do
   end
   
   it "should support submission text" do
-    get "/fake_launch"
-    get "/launch/grade_passback/4", {}, 'rack.session' => {"farthest_for_grade_passback" => 10}
+    fake_launch({"farthest_for_grade_passback" => 10})
+    get "/launch/grade_passback/4", {}
     post "/test/grade_passback/4", {'launch_url' => 'http://www.example.com/launch'}
     html = Nokogiri::HTML(last_response.body)
     html.css("input[name='lis_result_sourcedid']").length.should == 1
@@ -156,8 +156,8 @@ describe 'Grade Passback Activity' do
   end
   
   it "should support submission url" do
-    get "/fake_launch"
-    get "/launch/grade_passback/5", {}, 'rack.session' => {"farthest_for_grade_passback" => 10}
+    fake_launch({"farthest_for_grade_passback" => 10})
+    get "/launch/grade_passback/5", {}
     post "/test/grade_passback/5", {'launch_url' => 'http://www.example.com/launch'}
     html = Nokogiri::HTML(last_response.body)
     html.css("input[name='lis_result_sourcedid']").length.should == 1

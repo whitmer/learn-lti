@@ -27,24 +27,24 @@ describe 'LTI Launch' do
     it "should set session variables on success" do
       lti_config
       IMS::LTI::ToolProvider.any_instance.should_receive(:valid_request?).and_return(true)
-      post "/launch/non-activity", {:oauth_consumer_key => @config.consumer_key, :custom_canvas_user_id => '1234', :lis_person_name_full => "Bob Jones"}
-      session['user_id'].should == '1234'
+      post "/launch/non-activity", {:oauth_consumer_key => @config.consumer_key, :custom_canvas_user_id => '1234', :lis_person_name_full => "Bob Jones", 'context_id' => '3456', 'tool_consumer_instance_guid' => '6789'}
+      session['user_id'].should == '6789.3456.1234'
       session['key'].should_not == nil
       session['secret'].should_not == nil
       session['name'].should == "Bob Jones"
     end
     
-    it "should fail gracefull if no activity defined" do
+    it "should fail gracefully if no activity defined" do
       lti_config
       IMS::LTI::ToolProvider.any_instance.should_receive(:valid_request?).and_return(true)
-      post "/launch/non-activity", {:oauth_consumer_key => @config.consumer_key}
+      post "/launch/non-activity", {:oauth_consumer_key => @config.consumer_key, :custom_canvas_user_id => '1234', :lis_person_name_full => "Bob Jones", 'context_id' => '3456', 'tool_consumer_instance_guid' => '6789'}
       assert_error_page("Invalid activity")
     end
     
     it "should redirect to the correct activity" do
       lti_config
       IMS::LTI::ToolProvider.any_instance.should_receive(:valid_request?).and_return(true)
-      post "/launch/post_launch", {:oauth_consumer_key => @config.consumer_key}
+      post "/launch/post_launch", {:oauth_consumer_key => @config.consumer_key, :custom_canvas_user_id => '1234', :lis_person_name_full => "Bob Jones", 'context_id' => '3456', 'tool_consumer_instance_guid' => '6789'}
       last_response.should be_redirect
       last_response.location.should == "http://example.org/launch/post_launch/0"
     end
@@ -57,6 +57,7 @@ describe 'LTI Launch' do
     end
     
     it "should fail if no activity found" do
+      User.create(:user_id => '1234')
       get "/launch/no-activity/0", {}, 'rack.session' => {'user_id' => '1234'}
       assert_error_page("Invalid activity")
 
@@ -65,6 +66,7 @@ describe 'LTI Launch' do
     end
     
     it "should render form if successful" do
+      User.create(:user_id => '1234')
       get "/launch/post_launch/0", {}, 'rack.session' => {'user_id' => '1234', 'key' => 'asdf', 'secret' => 'jkl'}
       last_response.should be_ok
       html = Nokogiri::HTML(last_response.body)
@@ -82,6 +84,7 @@ describe 'LTI Launch' do
     end
     
     it "should fail if no activity found" do
+      User.create(:user_id => '1234')
       post "/test/no-activity/0", {}, 'rack.session' => {'user_id' => '1234'}
       assert_error_page("Invalid activity")
 
@@ -90,11 +93,13 @@ describe 'LTI Launch' do
     end
     
     it "should fail if no launch_url provided" do
+      User.create(:user_id => '1234')
       post "/test/post_launch/0", {}, 'rack.session' => {'user_id' => '1234', 'key' => 'asdf', 'secret' => 'jkl'}
       assert_error_page("Launch URL required")
     end
     
     it "should render launch form if successful" do
+      User.create(:user_id => '1234')
       post "/test/post_launch/0", {:launch_url => "http://www.example.com"}, 'rack.session' => {'user_id' => '1234', 'key' => 'asdf', 'secret' => 'jkl'}
       last_response.should be_ok
       html = Nokogiri::HTML(last_response.body)

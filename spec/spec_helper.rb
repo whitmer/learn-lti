@@ -21,3 +21,18 @@ end
 def session
   last_request.env['rack.session']
 end
+
+def fake_launch(settings={})
+  get "/fake_launch"
+  @user = User.last
+  @user.settings = settings
+  @user.save
+  @user
+end
+
+def user(settings={})
+  @user = User.new(:user_id => '1234')
+  @user.settings = settings
+  @user.save
+  @user
+end

@@ -9,8 +9,8 @@ describe 'Config XML Activity' do
   end
   
   it "should succeed when it matches the lookups" do
-    get "/fake_launch"
-    get "/launch/config_xml/1", {}, 'rack.session' => {'farthest_for_config_xml' => 10}
+    fake_launch({'farthest_for_config_xml' => 10})
+    get "/launch/config_xml/1", {}
     post "/validate/config_xml/1", 'answer' => <<-EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <cartridge_basiclti_link xmlns="http://www.imsglobal.org/xsd/imslticc_v1p0"
@@ -40,8 +40,8 @@ describe 'Config XML Activity' do
   end
   
   it "should fail if invalid xml" do
-    get "/fake_launch"
-    get "/launch/config_xml/1", {}, 'rack.session' => {'farthest_for_config_xml' => 10}
+    fake_launch({'farthest_for_config_xml' => 10})
+    get "/launch/config_xml/1", {}
     post "/validate/config_xml/1", 'answer' => "coolness"
     json = JSON.parse(last_response.body)
     json['correct'].should == false
@@ -49,8 +49,8 @@ describe 'Config XML Activity' do
   end
   
   it "should fail if it doesn't match the lookups" do
-    get "/fake_launch"
-    get "/launch/config_xml/1", {}, 'rack.session' => {'farthest_for_config_xml' => 10}
+    fake_launch({'farthest_for_config_xml' => 10})
+    get "/launch/config_xml/1", {}
     post "/validate/config_xml/1", 'answer' => <<-EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <cartridge_basiclti_link xmlns="http://www.imsglobal.org/xsd/imslticc_v1p0"

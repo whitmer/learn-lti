@@ -22,6 +22,46 @@ class LtiConfig
   end
 end
 
+class User
+  include DataMapper::Resource
+  property :id, Serial
+  property :user_id, String, :length => 4096
+  property :settings, Json
+  property :lti_config_id, Integer
+  belongs_to :lti_config
+  
+  def farthest_for(activity)
+    self.settings ||= {}
+    self.settings["farthest_for_#{activity.to_s}"] || -1
+  end
+  
+  def set_farthest(activity, index)
+    self.settings["farthest_for_#{activity.to_s}"] ||= index
+    self.settings["farthest_for_#{activity.to_s}"] = [index, self.settings["farthest_for_#{activity.to_s}"]].max
+    self.save
+    self.update_score(activity, index)
+    self.settings["farthest_for_#{activity.to_s}"]
+  end
+  
+  def update_score(activity, index)
+    activity = Activity.find(activity)
+    if activity && self.lti_config && self.settings['outcome_url'] && self.settings["outcome_for_#{activity}"]
+      url = self.settings['outcome_url']
+      id = self.settings["outcome_for_#{activity}"]
+      key = self.lti_config.consumer_key
+      secret = self.lti_config.shared_secret
+      percent = (index.to_f / activity.tests.length.to_f).round(3)
+      # POST the grade back
+      provider = IMS::LTI::ToolProvider.new(key, secret, {
+        'lis_outcome_service_url' => self.settings['outcome_url'],
+        'lis_result_sourcedid' => self.settings["outcome_for_#{activity}"]
+      })
+      provider.extend IMS::LTI::Extensions::OutcomeData::ToolProvider
+      response = provider.post_replace_result_with_data!(percent, "text" => "Finished #{index} of #{activity.tests.length} lessons")
+    end
+  end
+end
+
 class Launch
   include DataMapper::Resource
   property :id, Serial

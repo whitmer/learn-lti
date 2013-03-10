@@ -9,8 +9,8 @@ describe 'Return Redirect Activity' do
   end
   
   it "should trigger success on matching redirect" do
-    get "/fake_launch"
-    get "/launch/return_redirect/1", {}, 'rack.session' => {"farthest_for_return_redirect" => 10}
+    fake_launch({"farthest_for_return_redirect" => 10})
+    get "/launch/return_redirect/1", {}
     post "/test/return_redirect/1", {'launch_url' => 'http://www.example.com/launch'}
     html = Nokogiri::HTML(last_response.body)
     html.css("input[name='launch_presentation_return_url']").length.should == 1
@@ -24,8 +24,8 @@ describe 'Return Redirect Activity' do
   end
   
   it "should trigger failure on non-matching redirect" do
-    get "/fake_launch"
-    get "/launch/return_redirect/1", {}, 'rack.session' => {"farthest_for_return_redirect" => 10}
+    fake_launch({"farthest_for_return_redirect" => 10})
+    get "/launch/return_redirect/1", {}
     post "/test/return_redirect/1", {'launch_url' => 'http://www.example.com/launch'}
     html = Nokogiri::HTML(last_response.body)
     html.css("input[name='launch_presentation_return_url']").length.should == 1
