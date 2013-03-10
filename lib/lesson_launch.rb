@@ -32,7 +32,7 @@ module Sinatra
           return error("Invalid tool launch - missing parameters")
         end
         session["user_id"] = params['tool_consumer_instance_guid'] + "." + params['context_id'] + "." + user_id
-        @user = User.first_or_create(:user_id => session['user_id'], :lti_config_id => tool_config)
+        @user = User.first_or_create(:user_id => session['user_id'], :lti_config_id => tool_config.id)
         session["key"] = Samplers.random_string(true)
         session["secret"] = Samplers.random_string(true)
         session['name'] = params['lis_person_name_full']
