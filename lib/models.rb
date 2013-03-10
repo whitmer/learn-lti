@@ -44,7 +44,7 @@ class User
   end
   
   def update_score(activity, index)
-    finished += 1
+    finished = (index || -1) + 1
     activity = Activity.find(activity)
     if activity && self.lti_config && self.settings['outcome_url'] && self.settings["outcome_for_#{activity}"]
       url = self.settings['outcome_url']
