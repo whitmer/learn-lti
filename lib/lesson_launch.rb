@@ -46,7 +46,7 @@ module Sinatra
           return error("Invalid activity") unless activity
           if params['lis_outcome_service_url']
             @user.settings ||= {}
-            @user.settings["outcome_url"] = params['list_outcome_service_url']
+            @user.settings["outcome_url"] = params['lis_outcome_service_url']
             @user.settings["outcome_for_#{params['activity']}"] = params['lis_result_sourcedid']
             @user.save
           end
