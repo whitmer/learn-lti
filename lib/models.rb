@@ -43,23 +43,23 @@ class User
     self.settings["farthest_for_#{activity.to_s}"]
   end
   
-  def update_score(id, index)
+  def update_score(activity_id, index)
     finished = (index || -1) + 1
-    activity = Activity.find(id)
-    if activity && self.lti_config && self.settings['outcome_url'] && self.settings["outcome_for_#{id}"]
+    activity = Activity.find(activity_id)
+    if activity && self.lti_config && self.settings['outcome_url'] && self.settings["outcome_for_#{activity_id}"]
       url = self.settings['outcome_url']
-      id = self.settings["outcome_for_#{id}"]
+      id = self.settings["outcome_for_#{activity_id}"]
       key = self.lti_config.consumer_key
       secret = self.lti_config.shared_secret
       percent = (finished.to_f / activity.tests.length.to_f).round(3)
       # POST the grade back
       provider = IMS::LTI::ToolProvider.new(key, secret, {
         'lis_outcome_service_url' => self.settings['outcome_url'],
-        'lis_result_sourcedid' =>   self.settings["outcome_for_#{id}"]
+        'lis_result_sourcedid' => self.settings["outcome_for_#{activity_id}"]
       })
       provider.extend IMS::LTI::Extensions::OutcomeData::ToolProvider
-      response = provider.post_replace_result_with_data!(percent, "text" => "Finished #{finished} of #{activity.tests.length} lessons")
-    end/
+      provider.post_replace_result_with_data!(percent, "text" => "Finished #{finished} of #{activity.tests.length} lessons")
+    end
   end
 end
 
