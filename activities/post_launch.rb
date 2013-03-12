@@ -18,7 +18,7 @@ post_launch = Activity.add(:post_launch)
     <p>Let's use this chance to make sure you're set up
     correctly. Enter the URL of the location where you'd like
     to receive the POST request for LTI launches (localhost
-    is fine) and click "Launch" to test.</p>
+    is fine, <i>make sure it can render in an iframe, i.e. check X-Frame-Options</i>) and click "Launch" to test.</p>
     <p>P.S. Don't be sad if your interface doesn't fit in the little iframe
     we've set up for you, it just means you don't have a responsive 
     design. You don't *have* to build a UI that fits in those dimensions

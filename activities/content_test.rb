@@ -1,12 +1,11 @@
 content_test = Activity.add(:content_test)
   content_test.intro = <<-EOF
-    Make sure you know how to use <a href="#">the content 
+    Make sure you know how to use <a href="https://canvas.instructure.com/doc/api/file.tools_intro.html">the content 
     extensions in Canvas</a> to return resources
   EOF
   
   # add tests for checking allowed return types 
-  content_test.add_test :return_types, :pick_roles => true, :iterations => 5, :explanation => <<-EOF
-  content_test.pick_types <<-EOF
+  content_test.add_test :return_types, :pick_return_types => true, :iterations => 5, :explanation => <<-EOF
     <p>Standard LTI is nice for getting users from the learning
     platform into the app, but doesn't do so well at getting content
     back from the app into the learning platform. We've built a
@@ -15,7 +14,20 @@ content_test = Activity.add(:content_test)
     content and send it back to the learning platform for things
     like content creation or homework submission.</p>
     <p>There are two possible ways that the learning platform will
-    tell you what return types are valid. The first way is the 
+    tell you what return types are valid.
+    The first way is the <code>ext_content_return_types</code> parameter.
+    The value of this parameter isa comma-separated
+    list of valid return types. Possible types are:</p>
+    <ul>
+      <li><code>image</code></li>
+      <li><code>iframe</code></li>
+      <li><code>link</code></li>
+      <li><code>file</code></li>
+      <li><code>basic_lti</code></li>
+      <li><code>oembed</code></li>
+    </ul>
+    <p>
+    Alternatively, the learning platform may sent the 
     <code>selection_directive</code> parameter.
     Different options for this parameter mean a different set of
     return types are allowed (we'll go into how to return each
@@ -28,17 +40,6 @@ content_test = Activity.add(:content_test)
       <dt><code>submit_homework</code></dt>
       <dd><code>link,file</code></dd>
     </dl>
-    <p>Alternatively, the learning platform may instead use the 
-    <code>ext_content_return_types</code> parameter to send a comma-separated
-    list of valid return types. Possible types are:</p>
-    <ul>
-      <li><code>image</code></li>
-      <li><code>iframe</code></li>
-      <li><code>link</code></li>
-      <li><code>file</code></li>
-      <li><code>basic_lti</code></li>
-      <li><code>oembed</code></li>
-    </ul>
     <p>
       Now I'm going to send over different combinations of return types
       or a selection directive (I'll only ever send over one parameter or
