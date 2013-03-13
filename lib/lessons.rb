@@ -49,7 +49,7 @@ module Sinatra
       @launch_data = @consumer.generate_launch_data
       k, v = @launch_data.each_pair.detect{|k, v| k == param}
     
-      if @test[:args][:assignment]
+      if @test[:args][:assignment] && @test[:args][:score]
         v = @launch.id
       elsif @test[:args][:pick_return_types]
         v = @launch_data['ext_content_return_types'] || Samplers::DIRECTIVES[@launch_data['selection_directive']]
