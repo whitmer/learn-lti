@@ -32,6 +32,8 @@ $(document).ready(function() {
         $("#results").html("Sorry, that's wrong. " + data.explanation).addClass('alert alert-error');
       } else if(data.valid === true) {
         $("#results").html("Sorry, that's wrong. The value <code>" + data.answer + "</code> was actually valid. Re-launch to try again.").addClass('alert alert-error');
+      } else if(data.valid === false) {
+        $("#results").html("Sorry, that's wrong. The value <code>" + data.answer + "</code> was actually correct. Re-launch to try again.").addClass('alert alert-error');
       } else {
         $("#results").html("Sorry, that's wrong. The correct value was <code>" + data.answer + "</code>. Re-launch to try again.").addClass('alert alert-error');
       }
