@@ -9,6 +9,7 @@ module Sinatra
         @user = User.first_or_create(:user_id => session['user_id'])
         @user.generate_tokens
         @user.save
+        
         session["key"] = Samplers.random_string(true)
         session["secret"] = Samplers.random_string(true)
         session['name'] = 'Fake User'

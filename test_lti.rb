@@ -16,6 +16,7 @@ require './lib/validation.rb'
 require './lib/lesson_launch.rb'
 require './lib/lessons.rb'
 require './lib/api.rb'
+require './lib/auth.rb'
 
 class TestLti < Sinatra::Base
   register Sinatra::Main
@@ -23,6 +24,7 @@ class TestLti < Sinatra::Base
   register Sinatra::Lessons
   register Sinatra::GradePassback
   register Sinatra::Validation
+  register Sinatra::Auth
 
   # sinatra wants to set x-frame-options by default, disable it
   disable :protection
