@@ -13,6 +13,10 @@ def lti_config
   @config = LtiConfig.generate("Test App")
 end
 
+def auth_config
+  @config = LtiConfig.generate("Canvas Auth")
+end
+
 def assert_error_page(msg)
   last_response.body.should match(msg)
 end
@@ -36,6 +40,7 @@ def fake_launch(settings={})
   session['user_id'].should_not be_nil
   @user = User.last
   @user.settings = settings
+  @user.settings['api_host'] = "http://www.example.com"
   @user.generate_tokens
   @user.save
   @user

@@ -5,7 +5,7 @@ module Sinatra
       
       app.get '/launch/:activity/:index' do
         load_user_and_activity
-        if @test[:category] == :api && !@user.settings['access_token']
+        if @activity.category == :api && !@user.settings['access_token']
           oauth_dance
         end
         if @test[:type] == :local_api || @test[:type] == :file

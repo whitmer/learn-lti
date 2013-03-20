@@ -178,8 +178,9 @@ describe 'API get_with_session Requests' do
   end
   
   it "should call setup on page load" do
-    fake_launch({'farthest_for_get_requests' => 10})
+    fake_launch({'farthest_for_get_requests' => 10, 'access_token' => 'abc'})
     get_with_session "/launch/get_requests/8", {}
+    last_response.should be_ok
     html = Nokogiri::HTML(last_response.body)
     html.css('#answer')[0]['rel'].should == '/setup/get_requests/8'
   end

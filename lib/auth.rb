@@ -39,5 +39,5 @@ module Sinatra
     end    
   end
   
-  register Main
+  register Auth
 end

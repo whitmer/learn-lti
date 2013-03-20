@@ -45,6 +45,7 @@ module Sinatra
         @user.settings ||= {}
         @token = @user.settings['access_token']
         @api_host = @user.settings['api_host']
+        
         @user
       end
       
