@@ -14,11 +14,16 @@ require './lib/grade_passback.rb'
 require './lib/validation.rb'
 require './lib/lesson_launch.rb'
 require './lib/lessons.rb'
+require './lib/api.rb'
 
 # sinatra wants to set x-frame-options by default, disable it
 disable :protection
 
 enable :sessions
+raise "session key required" if ENV['RACK_ENV'] == 'production' && !ENV['SESSION_KEY']
+set :session_secret, ENV['SESSION_KEY'] || "local_secret"
+
+UPLOAD_ERROR_MESSAGES = ["Germany has declared war on the Jones boys.", "Fly, yes. Land, no.", "Why did it have to be snakes?", "\"X\" never, ever marks the spot.", "You are named after the dog?"]
 
 get '/' do
   erb :index
@@ -29,11 +34,37 @@ get '/config.xml' do
   erb :config_xml, :layout => false
 end
 
-def load_user
-  @user = User.first(:user_id => session['user_id'])
-  if !session['user_id'] || !@user
-    halt error("Session lost")
+get '/api/v1/status' do
+  {
+    :code => Digest::MD5.hexdigest(Date.today.iso8601)[1, 15],
+    :status => 'running'
+  }.to_json
+end
+
+def session_secret
+  get :session_secret
+end
+
+def load_token
+  if @user && @user.settings['fake_token'] && @user.settings['fake_token'] != params['access_token']
+    halt 400, error("Invalid access token")
   end
+end
+
+def load_user(ignore_token=false)
+  @user = session['user_id'] && User.first(:user_id => session['user_id'])
+  if params['user_id'] && params['code']
+    @user = User.first(:id => params['user_id'])
+    @user = nil if @user && @user.settings['verification'] != params['code']
+    load_token unless ignore_token
+  end
+  if !@user
+    halt 400, error("No user information found")
+  end
+  @user.settings ||= {}
+  @token = @user.settings['access_token']
+  @api_host = @user.settings['api_host']
+  @user
 end
 
 def load_user_and_activity
@@ -59,5 +90,8 @@ end
 
 def host
   request.scheme + "://" + request.host_with_port
+end
+
+class ApiError < StandardError
 end
 

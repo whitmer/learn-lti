@@ -1,4 +1,4 @@
-signature_check = Activity.add(:signature_check)
+signature_check = Activity.add(:signature_check, :lti)
   signature_check.intro = <<-EOF
     Make sure you know how to verify signatures and other security parameters
   EOF

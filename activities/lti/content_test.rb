@@ -1,4 +1,4 @@
-content_test = Activity.add(:content_test)
+content_test = Activity.add(:content_test, :lti)
   content_test.intro = <<-EOF
     Make sure you know how to use <a href="https://canvas.instructure.com/doc/api/file.tools_intro.html">the content 
     extensions in Canvas</a> to return resources

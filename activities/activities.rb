@@ -9,18 +9,20 @@ class Activity
   #   what content selection type(s)
   #   what file types
   # TODO: proxy stuff in LTI 2.0
-  def self.add(id)
-    obj = Activity.new(id)
+  def self.add(id, category)
+    obj = Activity.new(id, category)
     @activities ||= []
     @activities << obj
     obj
   end
   
   attr_accessor :intro
+  attr_accessor :category
   attr_accessor :done
   
-  def initialize(id)
+  def initialize(id, category)
     @id = id
+    @category = category
   end
   
   def self.find(id)
@@ -28,8 +30,8 @@ class Activity
     @activities.detect{|a| a.id.to_s == id.to_s}
   end
   
-  def self.all
-    @activities
+  def self.all(category)
+    @activities.select{|a| a.category == category}
   end
   
   def id
@@ -40,51 +42,82 @@ class Activity
     @tests
   end
   
-  def append_test(type, args={})
+  def append_lti_test(type, args={})
+    @tests ||= []
+    @tests << {:type => type, :args => args}
+  end
+  
+  def append_api_test(type, args={})
     @tests ||= []
     @tests << {:type => type, :args => args}
   end
   
   def add_test(key, args)
     args[:key] = key
-    append_test(:fill_in, args)
+    append_lti_test(:fill_in, args)
   end
   
   def add_redirect_test(key, args)
     args[:key] = key
-    append_test(:redirect, args)
+    append_lti_test(:redirect, args)
   end
   
   def add_xml_test(key, lookups, args)
     args[:key] = key
     args[:lookups] = lookups
-    append_test(:xml, args)
+    append_lti_test(:xml, args)
   end
   
   def add_grade_test(key, args)
     args[:key] = key
-    append_test(:grade_passback, args)
+    append_lti_test(:grade_passback, args)
   end
   
   def add_session_test
-    append_test(:session)
+    append_lti_test(:session)
+  end
+  
+  def api_test(key, args={})
+    args ||= {}
+    args[:key] = key
+    type = :api_call
+    type = :answer if args[:answer]
+    append_api_test(type, args)
+  end
+  
+  def local_api_test(key, args={})
+    args ||= {}
+    args[:key] = key
+    append_api_test(:local_api, args)
+  end
+  
+  def oauth_test(key, args={})
+    args ||= {}
+    args[:key] = key
+    append_api_test(:oauth, args)
+  end
+
+  def file_test(key, args={})
+    args ||= {}
+    args[:key] = key
+    append_api_test(:file, args)
   end
 end
 
-require './activities/post_launch'
-require './activities/signature_check'
-require './activities/return_redirect'
-require './activities/config_xml'
-require './activities/content_test'
-require './activities/grade_passback'
+require './activities/lti/post_launch'
+require './activities/lti/signature_check'
+require './activities/lti/return_redirect'
+require './activities/lti/config_xml'
+require './activities/lti/content_test'
+require './activities/lti/grade_passback'
+
+require './activities/api/get_requests'
+require './activities/api/oauth'
+require './activities/api/non_get_requests'
+require './activities/api/pagination'
+require './activities/api/masquerading'
+require './activities/api/file_uploads'
 
 # IDEA: quizzes should be "open-bookmark" quizzes, meaning you can use any 
 # page you have bookmarked or that can be navigated to without searching via your bookmarks
-
-#session_test = Activity.add(:session_test)
-#  session_test.intro = <<-EOF
-#    Make sure you know how to set up session correctly so it sticks even after page loads
-#  EOF
-#  session_test.add_session_test
-
 

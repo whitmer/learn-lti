@@ -22,7 +22,7 @@ describe 'Activity Rendering' do
     last_response.body.should == "Launch URL required"
   end
   
-  Activity.all.each do |activity|
+  Activity.all(:lti).each do |activity|
     describe "#{activity.id} render checks" do  
       activity.tests.each_with_index do |test, idx|
         it "should allow checking for #{test[:args][:param]}" do

@@ -1,4 +1,4 @@
-config_xml = Activity.add(:config_xml)
+config_xml = Activity.add(:config_xml, :lti)
   config_xml.intro = <<-EOF
     Make sure you know how to <a href="https://lti-examples.heroku.com/build_xml.html">build config XML</a>
   EOF

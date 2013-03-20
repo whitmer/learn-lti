@@ -9,7 +9,7 @@
   <p>Which activity would you like to embed here?</p>
 <% end %>
 <ul class="nav nav-pills nav-stacked" id="activities">
-<% Activity.all.each do |activity| %>
+<% Activity.all(:lti).each do |activity| %>
   <% text = Nokogiri::HTML(activity.intro).text %>
   <% activity_url = host + "/launch/#{activity.id}"
     if local_launch

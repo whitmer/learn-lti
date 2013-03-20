@@ -35,6 +35,19 @@ class User
     self.settings["farthest_for_#{activity.to_s}"] || -1
   end
   
+  def regenerate_access_token
+    self.settings ||= {}
+    self.settings['fake_token'] = Digest::MD5.hexdigest("Api token" + Time.now.to_i.to_s + rand(99999).to_s)[0, 20]
+    self.settings['fake_secret'] = Digest::MD5.hexdigest("Api token" + Time.now.to_i.to_s + rand(99999).to_s)[0, 20]
+    self.settings['fake_code'] = Digest::MD5.hexdigest("Api token" + Time.now.to_i.to_s + rand(99999).to_s)[0, 20]
+  end
+  
+  def generate_tokens
+    self.settings ||= {}
+    self.settings['verification'] ||= Digest::MD5.hexdigest(Time.now.to_i.to_s + rand(99999).to_s)[0, 20]
+    regenerate_access_token
+  end
+  
   def set_farthest(activity, index)
     self.settings["farthest_for_#{activity.to_s}"] ||= index
     self.settings["farthest_for_#{activity.to_s}"] = [index, self.settings["farthest_for_#{activity.to_s}"]].max

@@ -1,3 +1,4 @@
+ENV['RACK_ENV']='test'
 RACK_ENV='test'
 require 'rspec'
 require 'rack/test'
@@ -26,6 +27,7 @@ def fake_launch(settings={})
   get "/fake_launch"
   @user = User.last
   @user.settings = settings
+  @user.generate_tokens
   @user.save
   @user
 end

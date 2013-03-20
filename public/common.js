@@ -14,7 +14,7 @@ $(document).ready(function() {
   });
   confirmResult = function(data) {
     $("#results").show().attr('class', '');
-    $("#answer .btn,#answer .waiting").hide();
+    $("#answer .btn.hideable,#answer .waiting").hide();
     if(data.error) {
       $("#results").text("Error: " + data.error).addClass('alert alert-error');
     } else if(data.correct) {
@@ -23,7 +23,7 @@ $(document).ready(function() {
       } else if(data.next) {
         $("#results").html("Right! <a class='btn btn-primary' href='" + data.next + "'>On to the next lesson!</a>").addClass('alert alert-success');
       } else {
-        $("#results").text("Right! You're done with this section!").addClass('alert alert-success');
+        $("#results").text("Right! You're done with this activity!").addClass('alert alert-success');
       }
     } else {
       $("#answer .hideable").hide();
@@ -31,17 +31,47 @@ $(document).ready(function() {
         $("#answer .btn").show();
         $("#results").html("Sorry, that's wrong. " + data.explanation).addClass('alert alert-error');
       } else if(data.valid === true) {
-        $("#results").html("Sorry, that's wrong. The value <code>" + data.answer + "</code> was actually valid. Re-launch to try again.").addClass('alert alert-error');
+        if(data.answer) {
+          $("#results").html("Sorry, that's wrong. The value <code>" + data.answer + "</code> was actually valid. Re-launch to try again.").addClass('alert alert-error');
+        } else {
+          $("#results").html("Sorry, that's wrong. The response was actually valid. Re-launch to try again.").addClass('alert alert-error');
+        }
       } else if(data.valid === false) {
-        $("#results").html("Sorry, that's wrong. The value <code>" + data.answer + "</code> was not valid. Re-launch to try again.").addClass('alert alert-error');
+        if(data.answer) {
+          $("#results").html("Sorry, that's wrong. The value <code>" + data.answer + "</code> was not valid. Re-launch to try again.").addClass('alert alert-error');
+        } else {
+          $("#results").html("Sorry, that's wrong. The response was not valid. Re-launch to try again.").addClass('alert alert-error');
+        }
+      } else if(data.answer === "not telling") {
+        $("#results").html("Sorry, that's wrong. I can't tell you the correct answer because it doesn't change often enough. Please try again.").addClass('alert alert-error');
       } else {
         $("#results").html("Sorry, that's wrong. The correct value was <code>" + data.answer + "</code>. Re-launch to try again.").addClass('alert alert-error');
       }
     }
   };
-  console.log(window.parent);
-  if($("#result_data").length) {
+  if($("#result_data").length && window.parent && window.parent.confirmResult) {
     window.parent.confirmResult(JSON.parse($("#result_data").val()));
+  }
+  if($("#answer").attr('rel')) {
+    $.ajax({
+      url: $("#answer").attr('rel'),
+      type: 'POST',
+      dataType: 'json',
+      success: function(data) {
+        if(data.ready == false) {
+          $("#results").show().text("setup failed: " + data.error).addClass('alert alert-error');
+          $(".setup_result").text("!error!");
+          console.log(data);
+        } else {
+          $(".setup_result").text(data.result);
+          $("#answer").show();
+        }
+      },
+      error: function(data) {
+        $("#results").show().text("setup failed: unknown error").addClass('alert alert-error');
+        console.log(data);
+      }
+    });
   }
   $("#answer").submit(function(event) {
     event.preventDefault();

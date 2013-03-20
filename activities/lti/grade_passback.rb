@@ -1,4 +1,4 @@
-grade_passback = Activity.add(:grade_passback)
+grade_passback = Activity.add(:grade_passback, :lti)
   grade_passback.intro = <<-EOF
     Make sure you know how to pass grades back to the learning platform
   EOF

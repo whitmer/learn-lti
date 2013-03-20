@@ -6,6 +6,8 @@ module Sinatra
       session.clear
       session["user_id"] = '1234'
       @user = User.first_or_create(:user_id => session['user_id'])
+      @user.generate_tokens
+      @user.save
       session["key"] = Samplers.random_string(true)
       session["secret"] = Samplers.random_string(true)
       session['name'] = 'Fake User'
@@ -33,6 +35,10 @@ module Sinatra
         end
         session["user_id"] = params['tool_consumer_instance_guid'] + "." + params['context_id'] + "." + user_id
         @user = User.first_or_create(:user_id => session['user_id'], :lti_config_id => tool_config.id)
+        @user.settings ||= {}
+        @user.settings['api_host'] = 'https://canvas.instructure.com'
+        @user.generate_tokens
+        @user.save
         session["key"] = Samplers.random_string(true)
         session["secret"] = Samplers.random_string(true)
         session['name'] = params['lis_person_name_full']

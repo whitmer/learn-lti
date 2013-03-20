@@ -1,4 +1,4 @@
-return_redirect = Activity.add(:return_redirect)
+return_redirect = Activity.add(:return_redirect, :lti)
   return_redirect.intro = <<-EOF
     Make sure you know how to redirect back to the LMS, potentially
     with success or error messages

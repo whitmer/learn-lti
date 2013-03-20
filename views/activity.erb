@@ -1,5 +1,4 @@
 <div class='row'>
-  <% if @test[:type] == :fill_in || @test[:type] == :redirect || @test[:type] == :xml || @test[:type] == :grade_passback %>
   <div class='span6'>
     <h2><%= @activity.id %></h2>
     <p><%= @activity.intro %></p>
@@ -20,71 +19,147 @@
     </div>
     <h3><%= @test[:args][:key] %></h3>
     <p>
-      <%= @test[:args][:explanation] %>
+      <%= erb @test[:args][:explanation] %>
     </p>
   </div>
     
     <div class='span5 well'>
-      Key: <span id='consumer_key'><%= session['key'] %></span><br/>
-      Secret: <span id='shared_secret'><%= session['secret'] %></span><br/>
-      <% if @test[:type] == :xml %>
-        <form method="POST" action="/validate/<%= params['activity'] %>/<%= @index %>" id="answer" class="form-inline">
-          <label for="answer">XML Content:
-          </label><br/>
-          <textarea id="answer" name="answer" class="span5" style="height: 200px;"></textarea><br/>
-          <button type="submit" class='btn hideable'>Confirm</button>
-        </form>
-      <% else %>
-        <form method="POST" action="/test/<%= params['activity'] %>/<%= @index %>" id="launch" target="app_launch" class="form-inline">
+      <% if @test[:type] == :fill_in || @test[:type] == :redirect || @test[:type] == :xml || @test[:type] == :grade_passback %>
+        Key: <span id='consumer_key'><%= session['key'] %></span><br/>
+        Secret: <span id='shared_secret'><%= session['secret'] %></span><br/>
+        <% if @test[:type] == :xml %>
+          <form method="POST" action="/validate/<%= params['activity'] %>/<%= @index %>" id="answer" class="form-inline">
+            <label for="answer">XML Content:
+            </label><br/>
+            <textarea id="answer" name="answer" class="span5" style="height: 200px;"></textarea><br/>
+            <button type="submit" class='btn hideable'>Confirm</button>
+          </form>
+        <% else %>
+          <form method="POST" action="/test/<%= params['activity'] %>/<%= @index %>" id="launch" target="app_launch" class="form-inline">
+            <label>
+              Launch URL:
+              <input type="text" name="launch_url" value="<%= session['launch_url'] %>" style="width: 200px;"/>
+            </label>
+            <button type="submit" class='btn'>Launch</button>
+          </form>
+          <iframe id="app_launch" frameborder="0" style="border: 2px solid #333; width: 100%; height: 300px;" src="about:blank"></iframe>
+          <% if @test[:type] == :fill_in %>
+            <form method="POST" action="/validate/<%= params['activity'] %>/<%= @index %>" id="answer" class="form-inline" style="display: none;">
+              <% if @test[:args][:pick_roles] %>
+                roles passed at launch:
+                <ul>
+                  <li><label><input type="checkbox" name="role[]" value="Teacher"/> Teacher</label></li>
+                  <li><label><input type="checkbox" name="role[]" value="Student"/> Student</label></li>
+                  <li><label><input type="checkbox" name="role[]" value="Observer"/> Observer</label></li>
+                  <li><label><input type="checkbox" name="role[]" value="Designer"/> Designer</label></li>
+                  <li><label><input type="checkbox" name="role[]" value="Admin"/> Admin</label></li>
+                </ul>
+              <% elsif @test[:args][:pick_valid] %>
+                <label>
+                  was the value sent for <code><%= @test[:args][:param] %></code> valid?
+                  <select name="valid">
+                    <option>Yes</option>
+                    <option>No</option>
+                  </select>
+                </label>
+              <% else %>
+                <label>
+                  value for <code><%= @test[:args][:param] %></code>:<br/>
+                  <input type="text" name="answer" id="answer_value" class='hideable'/>
+                </label>
+              <% end %>
+              <button type="submit" class='btn hideable'>Confirm</button>
+            </form>
+          <% elsif @test[:type] == :redirect %>
+            <div id="answer">
+              <div class="waiting">
+                Waiting for redirect...
+              </div>
+            </div>
+          <% elsif @test[:type] == :grade_passback %>
+            <form method="POST" action="/validate/<%= params['activity'] %>/<%= @index %>" id="answer" class="form-inline" style="display: none;">
+              Click "Confirm" once you think grades have been passed back
+              <button type="submit" class='btn hideable'>Confirm</button>
+            </form>
+          <% end %>
+        <% end %>
+      <% elsif @test[:type] == :answer || @test[:type] == :api_call %>
+        <form method="POST" rel="/setup/<%= params['activity'] %>/<%= @index %>" action="/validate/<%= params['activity'] %>/<%= @index %>" id="answer" class="form-inline" style="display: none;">
           <label>
-            launch URL:
-            <input type="text" name="launch_url" value="<%= session['launch_url'] %>" style="width: 200px;"/>
+            put your answer here:<br/>
+            <input type="text" name="answer" id="answer_value"/>
+          </label>
+          <button type="submit" class='btn'>Confirm</button>
+        </form>
+      <% elsif @test[:type] == :file %>
+        Access Token: <span id='token'><%= @user.settings['fake_token'] %></span><br/>
+        <form method="POST" rel="/setup/<%= params['activity'] %>/<%= @index %>" action="/validate/<%= params['activity'] %>/<%= @index %>" id="answer" class="form-inline" style="display: none;">
+          <label>
+            put your answer here:<br/>
+            <input type="text" name="answer" id="answer_value"/>
+          </label>
+          <button type="submit" class='btn'>Confirm</button>
+        </form>
+      <% elsif @test[:type] == :local_api %>
+        Access Token: <span id='token'><%= @user.settings['fake_token'] %></span><br/>
+        API Test URL: <span id='oauth_url'><%= host %>/api/v1/secret/<%= params['activity'] %>/<%= @index %>/<%= @user.id %>/<%= @user.settings['verification'] %></span><br/>
+        API Logout URL: <span id='oauth_url'><%= host %>/login/oauth2/token</span><br/><br/>
+        <form method="POST" rel="/setup/<%= params['activity'] %>/<%= @index %>" action="/validate/<%= params['activity'] %>/<%= @index %>" id="answer" class="form-inline" style="display: none;">
+          <% if @test[:args][:pick_expired] %>
+            <label>
+              did the request succeed without an expiration error?
+              <select name="valid">
+                <option>Yes</option>
+                <option>No</option>
+              </select>
+            </label>
+          <% elsif @test[:args][:pick_throttled] %>
+            <label>
+              did the request succeed without a throttling error?
+              <select name="valid">
+                <option>Yes</option>
+                <option>No</option>
+              </select>
+            </label>
+          <% else %>
+            <label>
+              put your answer here:<br/>
+              <input type="text" name="answer" id="answer_value"/>
+            </label>
+          <% end %>
+          <button type="submit" class='btn'>Confirm</button>
+        </form>
+      <% elsif @test[:type] == :oauth %>
+        Client ID: <span id='client_id'><%= @user.id %></span><br/>
+        Client Secret: <span id='client_secret'><%= @user.settings['fake_secret'] %></span><br/>
+        OAuth Init URL: <span id='oauth_url'><%= host %>/login/oauth2/auth</span><br/>
+        OAuth Token URL: <span id='oauth_url'><%= host %>/login/oauth2/token</span><br/>
+        <form method="POST" action="/oauth_start/<%= params['activity'] %>/<%= @index %>" id="launch" target="app_launch" class="form-inline">
+          <label>
+            Launch URL:
+            <input type="text" name="url" value="<%= session['oauth_url'] %>" style="width: 200px;"/>
           </label>
           <button type="submit" class='btn'>Launch</button>
         </form>
         <iframe id="app_launch" frameborder="0" style="border: 2px solid #333; width: 100%; height: 300px;" src="about:blank"></iframe>
-        <% if @test[:type] == :fill_in %>
-          <form method="POST" action="/validate/<%= params['activity'] %>/<%= @index %>" id="answer" class="form-inline" style="display: none;">
-            <% if @test[:args][:pick_roles] %>
-              roles passed at launch:
-              <ul>
-                <li><label><input type="checkbox" name="role[]" value="Teacher"/> Teacher</label></li>
-                <li><label><input type="checkbox" name="role[]" value="Student"/> Student</label></li>
-                <li><label><input type="checkbox" name="role[]" value="Observer"/> Observer</label></li>
-                <li><label><input type="checkbox" name="role[]" value="Designer"/> Designer</label></li>
-                <li><label><input type="checkbox" name="role[]" value="Admin"/> Admin</label></li>
-              </ul>
-            <% elsif @test[:args][:pick_valid] %>
-              <label>
-                was the value sent for <code><%= @test[:args][:param] %></code> valid?
-                <select name="valid">
-                  <option>Yes</option>
-                  <option>No</option>
-                </select>
-              </label>
-            <% else %>
-              <label>
-                value for <code><%= @test[:args][:param] %></code>:<br/>
-                <input type="text" name="answer" id="answer_value" class='hideable'/>
-              </label>
-            <% end %>
-            <button type="submit" class='btn hideable'>Confirm</button>
-          </form>
-        <% elsif @test[:type] == :redirect %>
-          <div id="answer">
-            <div class="waiting">
-              Waiting for redirect...
-            </div>
-          </div>
-        <% elsif @test[:type] == :grade_passback %>
-          <form method="POST" action="/validate/<%= params['activity'] %>/<%= @index %>" id="answer" class="form-inline" style="display: none;">
-            Click "Confirm" once you think grades have been passed back
-            <button type="submit" class='btn hideable'>Confirm</button>
-          </form>
-        <% end %>
+        <form method="POST" action="/validate/<%= params['activity'] %>/<%= @index %>" id="answer" class="form-inline" style="display: none;">
+          <% if @test[:args][:pick_access_denied] %>
+            <label>
+              did the request succeed without an access denied error?
+              <select name="valid">
+                <option>Yes</option>
+                <option>No</option>
+              </select>
+            </label>
+          <% else %>
+            <label>
+              answer:<br/>
+              <input type="text" name="answer" id="answer_value" class='hideable'/>
+            </label>
+          <% end %>
+          <button type="submit" class='btn hideable'>Confirm</button>
+        </form>
       <% end %>
       <div id="results"></div>
     </div>
-    
-  <% end %>
 </div>

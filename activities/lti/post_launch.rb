@@ -1,4 +1,4 @@
-post_launch = Activity.add(:post_launch)
+post_launch = Activity.add(:post_launch, :lti)
   post_launch.intro = <<-EOF
     At their simplest level LTI launches are
     just POST requests. There are some standard parameters
