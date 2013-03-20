@@ -1,4 +1,8 @@
 files = Activity.add(:file_uploads, :api)
+  files.intro = <<-EOF
+    Teach you how to upload files to Canvas from a local location or a remote URL
+  EOF
+  
   files.file_test :preflight, :phase => :step_1, :explanation => <<-EOF
     <p>Uploading files to Canvas takes a couple steps. The
     main reason for that is to keep Canvas performant even 

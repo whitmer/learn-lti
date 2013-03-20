@@ -8,22 +8,25 @@
 <% else %>
   <p>Which activity would you like to embed here?</p>
 <% end %>
-<ul class="nav nav-pills nav-stacked" id="activities">
-<% Activity.all(:lti).each do |activity| %>
-  <% text = Nokogiri::HTML(activity.intro).text %>
-  <% activity_url = host + "/launch/#{activity.id}"
-    if local_launch
-      url = activity_url
-    else
-      url = return_url + "&embed_type=basic_lti&title=#{activity.id}&text=#{activity.id}&url=" + CGI.escape(activity_url)
-    end
-  %>
-  <li>
-    <a href="<%= url %>">
-      <%= activity.id %>
-      <span class="description"><%= text %></span>
-      <span class="stats"><%= activity.tests.length %> Lessons</span>
-    </a>
-  </li>
+<% [:lti, :api].each do |key| %>
+  <h3><%= key.to_s.upcase %> Activities</h3>
+  <ul class="nav nav-pills nav-stacked" id="activities">
+  <% Activity.all(key).each do |activity| %>
+    <% text = Nokogiri::HTML(activity.intro).text %>
+    <% activity_url = host + "/launch/#{activity.id}"
+      if local_launch
+        url = activity_url
+      else
+        url = return_url + "&embed_type=basic_lti&title=#{activity.id}&text=#{activity.id}&url=" + CGI.escape(activity_url)
+      end
+    %>
+    <li>
+      <a href="<%= url %>">
+        <%= activity.id %>
+        <span class="description"><%= text %></span>
+        <span class="stats"><%= activity.tests.length %> Lessons</span>
+      </a>
+    </li>
+  <% end %>
+  </ul><br/>
 <% end %>
-</ul>

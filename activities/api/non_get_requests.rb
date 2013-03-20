@@ -1,4 +1,8 @@
 non_get = Activity.add(:non_get, :api)
+  non_get.intro = <<-EOF
+    Teach you to execute non-GET request in the Canvas API
+  EOF
+  
   non_get.api_test :post_requests, :lookup => lambda{|api|
     root = api.get('/api/v1/users/self/folders/root')
     next_path = "/api/v1/folders/#{root['id']}/folders"

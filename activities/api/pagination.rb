@@ -1,4 +1,8 @@
 pagination = Activity.add(:pagination, :api)
+  pagination.intro = <<-EOF
+    Make sure you know how pagination works in Canvas API results
+  EOF
+  
   pagination.api_test :pagination_header, :setup => lambda{|api|
     json = api.get('/api/v1/users/self/page_views?per_page=10000')
     raise ApiError.new("Not enough page views. You need to spend more time in Canvas before you can pass this test.") if !json.next_url
@@ -87,7 +91,7 @@ pagination = Activity.add(:pagination, :api)
   pagination.api_test :find_page_view, :setup => lambda{|api|
     json = api.get('/api/v1/users/self/page_views?per_page=1000000')
     raise "Not enough page views" unless json.next_url
-    json = api.get("/" + json.next_url.split(/\//, 4)[-1])
+    json = api.get("/" + json.next_url.split(/\ //, 4)[-1])
     raise "Not enough page views" unless json.length > 3
     puts json[3].to_json
     json[3]['request_id']
