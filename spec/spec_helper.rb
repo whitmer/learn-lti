@@ -5,8 +5,6 @@ require 'rack/test'
 require 'json'
 require './test_lti'
 
-set :environment, :test
-
 RSpec.configure do |config|
   config.before(:each) { DataMapper.auto_migrate! }
 end
@@ -19,12 +17,23 @@ def assert_error_page(msg)
   last_response.body.should match(msg)
 end
 
+def get_with_session(path, hash={}, args={})
+  args['rack.session'] = session.merge(args['rack.session'] || {})
+  get path, hash, args
+end
+
+def post_with_session(path, hash={}, args={})
+  args['rack.session'] = session.merge(args['rack.session'] || {})
+  post path, hash, args
+end
+
 def session
   last_request.env['rack.session']
 end
 
 def fake_launch(settings={})
   get "/fake_launch"
+  session['user_id'].should_not be_nil
   @user = User.last
   @user.settings = settings
   @user.generate_tokens

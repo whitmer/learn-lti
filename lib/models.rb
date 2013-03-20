@@ -27,6 +27,7 @@ class User
   property :id, Serial
   property :user_id, String, :length => 4096
   property :settings, Json
+  property :fake_token, String
   property :lti_config_id, Integer
   belongs_to :lti_config
   
@@ -37,15 +38,24 @@ class User
   
   def regenerate_access_token
     self.settings ||= {}
-    self.settings['fake_token'] = Digest::MD5.hexdigest("Api token" + Time.now.to_i.to_s + rand(99999).to_s)[0, 20]
-    self.settings['fake_secret'] = Digest::MD5.hexdigest("Api token" + Time.now.to_i.to_s + rand(99999).to_s)[0, 20]
-    self.settings['fake_code'] = Digest::MD5.hexdigest("Api token" + Time.now.to_i.to_s + rand(99999).to_s)[0, 20]
+    self.settings['fake_token'] = nil
+    self.settings['fake_secret'] = nil
+    self.settings['fake_code'] = nil
+    set_missing_tokens
+  end
+  
+  def set_missing_tokens
+    self.settings ||= {}
+    self.settings['fake_token'] ||= Digest::MD5.hexdigest("Api token" + Time.now.to_i.to_s + rand(99999).to_s)[0, 20] + (self.id ? "_#{self.id}" : "_0")
+    self.settings['fake_secret'] ||= Digest::MD5.hexdigest("Api token" + Time.now.to_i.to_s + rand(99999).to_s)[0, 20]
+    self.settings['fake_code'] ||= Digest::MD5.hexdigest("Api token" + Time.now.to_i.to_s + rand(99999).to_s)[0, 20]
+    self.fake_token = self.settings['fake_token']
   end
   
   def generate_tokens
     self.settings ||= {}
     self.settings['verification'] ||= Digest::MD5.hexdigest(Time.now.to_i.to_s + rand(99999).to_s)[0, 20]
-    regenerate_access_token
+    set_missing_tokens
   end
   
   def set_farthest(activity, index)
@@ -112,16 +122,4 @@ class Launch
     end
     self.save
   end
-end
-
-module Sinatra
-  module Models
-    configure do 
-      env = ENV['RACK_ENV'] || settings.environment
-      DataMapper.setup(:default, (ENV["DATABASE_URL"] || "sqlite3:///#{Dir.pwd}/#{env}.sqlite3"))
-      DataMapper.auto_upgrade!
-    end
-  end
-  
-  register Models
 end

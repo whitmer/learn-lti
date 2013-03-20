@@ -1,3 +1,3 @@
 require './test_lti'
 
-run Sinatra::Application
+run TestLti

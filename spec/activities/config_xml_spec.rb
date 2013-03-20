@@ -10,8 +10,8 @@ describe 'Config XML Activity' do
   
   it "should succeed when it matches the lookups" do
     fake_launch({'farthest_for_config_xml' => 10})
-    get "/launch/config_xml/1", {}
-    post "/validate/config_xml/1", 'answer' => <<-EOF
+    get_with_session "/launch/config_xml/1", {}
+    post_with_session "/validate/config_xml/1", 'answer' => <<-EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <cartridge_basiclti_link xmlns="http://www.imsglobal.org/xsd/imslticc_v1p0"
     xmlns:blti = "http://www.imsglobal.org/xsd/imsbasiclti_v1p0"
@@ -41,8 +41,8 @@ describe 'Config XML Activity' do
   
   it "should fail if invalid xml" do
     fake_launch({'farthest_for_config_xml' => 10})
-    get "/launch/config_xml/1", {}
-    post "/validate/config_xml/1", 'answer' => "coolness"
+    get_with_session "/launch/config_xml/1", {}
+    post_with_session "/validate/config_xml/1", 'answer' => "coolness"
     json = JSON.parse(last_response.body)
     json['correct'].should == false
     json['explanation'].should == "You're missing the <code>cartridge_basiclti_link</code> tag."
@@ -50,8 +50,8 @@ describe 'Config XML Activity' do
   
   it "should fail if it doesn't match the lookups" do
     fake_launch({'farthest_for_config_xml' => 10})
-    get "/launch/config_xml/1", {}
-    post "/validate/config_xml/1", 'answer' => <<-EOF
+    get_with_session "/launch/config_xml/1", {}
+    post_with_session "/validate/config_xml/1", 'answer' => <<-EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <cartridge_basiclti_link xmlns="http://www.imsglobal.org/xsd/imslticc_v1p0"
     xmlns:blti = "http://www.imsglobal.org/xsd/imsbasiclti_v1p0"

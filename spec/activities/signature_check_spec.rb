@@ -11,13 +11,13 @@ describe 'Signature Check Activity' do
   it "should succeed when marked as valid with correct signature" do
     Samplers.should_receive(:random).and_return(1)
     fake_launch({'farthest_for_signature_check' => 10})
-    get "/launch/signature_check/2", {}
-    post "/test/signature_check/2", {'launch_url' => 'http://www.example.com/launch'}
-    post "/validate/signature_check/2", {'valid' => 'Yes'}
+    get_with_session "/launch/signature_check/2", {}
+    post_with_session "/test/signature_check/2", {'launch_url' => 'http://www.example.com/launch'}
+    post_with_session "/validate/signature_check/2", {'valid' => 'Yes'}
     json = JSON.parse(last_response.body)
     json['correct'].should == true
 
-    post "/validate/signature_check/2", {'valid' => 'Yes'}
+    post_with_session "/validate/signature_check/2", {'valid' => 'Yes'}
     json = JSON.parse(last_response.body)
     json['correct'].should == false
     json['error'].should == 'Session lost'
@@ -26,9 +26,9 @@ describe 'Signature Check Activity' do
   it "should fail with the correct answer as answer instead of valid" do
     Samplers.should_receive(:random).and_return(1)
     fake_launch({'farthest_for_signature_check' => 10})
-    get "/launch/signature_check/2", {}
-    post "/test/signature_check/2", {'launch_url' => 'http://www.example.com/launch'}
-    post "/validate/signature_check/2", {'answer' => session['answer_for_signature_check_2']}
+    get_with_session "/launch/signature_check/2", {}
+    post_with_session "/test/signature_check/2", {'launch_url' => 'http://www.example.com/launch'}
+    post_with_session "/validate/signature_check/2", {'answer' => session['answer_for_signature_check_2']}
     json = JSON.parse(last_response.body)
     json['correct'].should == false
   end
@@ -36,9 +36,9 @@ describe 'Signature Check Activity' do
   it "should fail when marked as valid with the wrong signature" do
     Samplers.should_receive(:random).and_return(1)
     fake_launch({'farthest_for_signature_check' => 10})
-    get "/launch/signature_check/2", {}
-    post "/test/signature_check/2", {'launch_url' => 'http://www.example.com/launch'}
-    post "/validate/signature_check/2", {'valid' => 'No'}
+    get_with_session "/launch/signature_check/2", {}
+    post_with_session "/test/signature_check/2", {'launch_url' => 'http://www.example.com/launch'}
+    post_with_session "/validate/signature_check/2", {'valid' => 'No'}
     json = JSON.parse(last_response.body)
     json['correct'].should == false
   end
@@ -46,9 +46,9 @@ describe 'Signature Check Activity' do
   it "should succeed when marked as invalid with the wrong signature" do
     Samplers.should_receive(:random).and_return(0)
     fake_launch({'farthest_for_signature_check' => 10})
-    get "/launch/signature_check/2", {}
-    post "/test/signature_check/2", {'launch_url' => 'http://www.example.com/launch'}
-    post "/validate/signature_check/2", {'valid' => 'No'}
+    get_with_session "/launch/signature_check/2", {}
+    post_with_session "/test/signature_check/2", {'launch_url' => 'http://www.example.com/launch'}
+    post_with_session "/validate/signature_check/2", {'valid' => 'No'}
     json = JSON.parse(last_response.body)
     json['correct'].should == true
   end
@@ -56,9 +56,9 @@ describe 'Signature Check Activity' do
   it "should fail when marked as invalid with the correct signature" do
     Samplers.should_receive(:random).and_return(0)
     fake_launch({'farthest_for_signature_check' => 10})
-    get "/launch/signature_check/2", {}
-    post "/test/signature_check/2", {'launch_url' => 'http://www.example.com/launch'}
-    post "/validate/signature_check/2", {'valid' => 'Yes'}
+    get_with_session "/launch/signature_check/2", {}
+    post_with_session "/test/signature_check/2", {'launch_url' => 'http://www.example.com/launch'}
+    post_with_session "/validate/signature_check/2", {'valid' => 'Yes'}
     json = JSON.parse(last_response.body)
     json['correct'].should == false
   end
@@ -66,9 +66,9 @@ describe 'Signature Check Activity' do
   it "should succeed when marked as valid with correct nonce" do
     Samplers.should_receive(:random).with(3).and_return(1)
     fake_launch({'farthest_for_signature_check' => 10})
-    get "/launch/signature_check/0", {}
-    post "/test/signature_check/0", {'launch_url' => 'http://www.example.com/launch'}
-    post "/validate/signature_check/0", {'valid' => 'Yes'}
+    get_with_session "/launch/signature_check/0", {}
+    post_with_session "/test/signature_check/0", {'launch_url' => 'http://www.example.com/launch'}
+    post_with_session "/validate/signature_check/0", {'valid' => 'Yes'}
     json = JSON.parse(last_response.body)
     json['correct'].should == true
   end
@@ -76,9 +76,9 @@ describe 'Signature Check Activity' do
   it "should fail when marked as valid with the wrong nonce" do
     Samplers.should_receive(:random).with(3).and_return(1)
     fake_launch({'farthest_for_signature_check' => 10})
-    get "/launch/signature_check/0", {}
-    post "/test/signature_check/0", {'launch_url' => 'http://www.example.com/launch'}
-    post "/validate/signature_check/0", {'valid' => 'No'}
+    get_with_session "/launch/signature_check/0", {}
+    post_with_session "/test/signature_check/0", {'launch_url' => 'http://www.example.com/launch'}
+    post_with_session "/validate/signature_check/0", {'valid' => 'No'}
     json = JSON.parse(last_response.body)
     json['correct'].should == false
   end
@@ -86,9 +86,9 @@ describe 'Signature Check Activity' do
   it "should succeed when marked as invalid with the wrong nonce" do
     Samplers.should_receive(:random).with(3).and_return(0)
     fake_launch({'farthest_for_signature_check' => 10})
-    get "/launch/signature_check/0", {}
-    post "/test/signature_check/0", {'launch_url' => 'http://www.example.com/launch'}
-    post "/validate/signature_check/0", {'valid' => 'No'}
+    get_with_session "/launch/signature_check/0", {}
+    post_with_session "/test/signature_check/0", {'launch_url' => 'http://www.example.com/launch'}
+    post_with_session "/validate/signature_check/0", {'valid' => 'No'}
     json = JSON.parse(last_response.body)
     json['correct'].should == true
   end
@@ -96,9 +96,9 @@ describe 'Signature Check Activity' do
   it "should fail when marked as invalid with the correct nonce" do
     Samplers.should_receive(:random).with(3).and_return(0)
     fake_launch({'farthest_for_signature_check' => 10})
-    get "/launch/signature_check/0", {}
-    post "/test/signature_check/0", {'launch_url' => 'http://www.example.com/launch'}
-    post "/validate/signature_check/0", {'valid' => 'Yes'}
+    get_with_session "/launch/signature_check/0", {}
+    post_with_session "/test/signature_check/0", {'launch_url' => 'http://www.example.com/launch'}
+    post_with_session "/validate/signature_check/0", {'valid' => 'Yes'}
     json = JSON.parse(last_response.body)
     json['correct'].should == false
   end
@@ -107,9 +107,9 @@ describe 'Signature Check Activity' do
     Samplers.should_receive(:random).with(3).and_return(1)
     Samplers.should_receive(:random).with(3.1).and_return(0)
     fake_launch({'farthest_for_signature_check' => 10})
-    get "/launch/signature_check/0", {}, 'rack.session' => {'answers_for_signature_check_0' => '12345,12345,12345'}
-    post "/test/signature_check/0", {'launch_url' => 'http://www.example.com/launch'}
-    post "/validate/signature_check/0", {'valid' => 'No'}
+    get_with_session "/launch/signature_check/0", {}, 'rack.session' => {'answers_for_signature_check_0' => '12345,12345,12345'}
+    post_with_session "/test/signature_check/0", {'launch_url' => 'http://www.example.com/launch'}
+    post_with_session "/validate/signature_check/0", {'valid' => 'No'}
     json = JSON.parse(last_response.body)
     json['correct'].should == true
   end
@@ -118,9 +118,9 @@ describe 'Signature Check Activity' do
     Samplers.should_receive(:random).with(3).and_return(1)
     Samplers.should_receive(:random).with(3.1).and_return(0)
     fake_launch({'farthest_for_signature_check' => 1})
-    get "/launch/signature_check/0", {}, 'rack.session' => {'answers_for_signature_check_0' => '12345,12345,12345'}
-    post "/test/signature_check/0", {'launch_url' => 'http://www.example.com/launch'}
-    post "/validate/signature_check/0", {'valid' => 'Yes'}
+    get_with_session "/launch/signature_check/0", {}, 'rack.session' => {'answers_for_signature_check_0' => '12345,12345,12345'}
+    post_with_session "/test/signature_check/0", {'launch_url' => 'http://www.example.com/launch'}
+    post_with_session "/validate/signature_check/0", {'valid' => 'Yes'}
     json = JSON.parse(last_response.body)
     json['correct'].should == false
   end
@@ -129,9 +129,9 @@ describe 'Signature Check Activity' do
     Samplers.should_receive(:random).with(3).and_return(1)
     Samplers.should_receive(:random).with(3.1).and_return(1)
     fake_launch({'farthest_for_signature_check' => 10})
-    get "/launch/signature_check/1", {}
-    post "/test/signature_check/1", {'launch_url' => 'http://www.example.com/launch'}
-    post "/validate/signature_check/1", {'valid' => 'Yes'}
+    get_with_session "/launch/signature_check/1", {}
+    post_with_session "/test/signature_check/1", {'launch_url' => 'http://www.example.com/launch'}
+    post_with_session "/validate/signature_check/1", {'valid' => 'Yes'}
     json = JSON.parse(last_response.body)
     json['correct'].should == true
   end
@@ -139,9 +139,9 @@ describe 'Signature Check Activity' do
     Samplers.should_receive(:random).with(3).and_return(1)
     Samplers.should_receive(:random).with(3.1).and_return(1)
     fake_launch({'farthest_for_signature_check' => 10})
-    get "/launch/signature_check/1", {}
-    post "/test/signature_check/1", {'launch_url' => 'http://www.example.com/launch'}
-    post "/validate/signature_check/1", {'valid' => 'No'}
+    get_with_session "/launch/signature_check/1", {}
+    post_with_session "/test/signature_check/1", {'launch_url' => 'http://www.example.com/launch'}
+    post_with_session "/validate/signature_check/1", {'valid' => 'No'}
     json = JSON.parse(last_response.body)
     json['correct'].should == false
   end
@@ -150,9 +150,9 @@ describe 'Signature Check Activity' do
     Samplers.should_receive(:random).with(3).and_return(0)
     Samplers.should_receive(:random).with(3.1).and_return(1)
     fake_launch({'farthest_for_signature_check' => 10})
-    get "/launch/signature_check/1", {}
-    post "/test/signature_check/1", {'launch_url' => 'http://www.example.com/launch'}
-    post "/validate/signature_check/1", {'valid' => 'No'}
+    get_with_session "/launch/signature_check/1", {}
+    post_with_session "/test/signature_check/1", {'launch_url' => 'http://www.example.com/launch'}
+    post_with_session "/validate/signature_check/1", {'valid' => 'No'}
     json = JSON.parse(last_response.body)
     json['correct'].should == true
   end
@@ -161,9 +161,9 @@ describe 'Signature Check Activity' do
     Samplers.should_receive(:random).with(3).and_return(0)
     Samplers.should_receive(:random).with(3.1).and_return(1)
     fake_launch({'farthest_for_signature_check' => 10})
-    get "/launch/signature_check/1", {}
-    post "/test/signature_check/1", {'launch_url' => 'http://www.example.com/launch'}
-    post "/validate/signature_check/1", {'valid' => 'Yes'}
+    get_with_session "/launch/signature_check/1", {}
+    post_with_session "/test/signature_check/1", {'launch_url' => 'http://www.example.com/launch'}
+    post_with_session "/validate/signature_check/1", {'valid' => 'Yes'}
     json = JSON.parse(last_response.body)
     json['correct'].should == false
   end
@@ -172,9 +172,9 @@ describe 'Signature Check Activity' do
     Samplers.should_receive(:random).with(3).and_return(1)
     Samplers.should_receive(:random).with(3.1).and_return(0)
     fake_launch({'farthest_for_signature_check' => 10})
-    get "/launch/signature_check/1", {}
-    post "/test/signature_check/1", {'launch_url' => 'http://www.example.com/launch'}
-    post "/validate/signature_check/1", {'valid' => 'No'}
+    get_with_session "/launch/signature_check/1", {}
+    post_with_session "/test/signature_check/1", {'launch_url' => 'http://www.example.com/launch'}
+    post_with_session "/validate/signature_check/1", {'valid' => 'No'}
     json = JSON.parse(last_response.body)
     json['correct'].should == true
   end
@@ -183,9 +183,9 @@ describe 'Signature Check Activity' do
     Samplers.should_receive(:random).with(3).and_return(1)
     Samplers.should_receive(:random).with(3.1).and_return(0)
     fake_launch({'farthest_for_signature_check' => 10})
-    get "/launch/signature_check/1", {}
-    post "/test/signature_check/1", {'launch_url' => 'http://www.example.com/launch'}
-    post "/validate/signature_check/1", {'valid' => 'Yes'}
+    get_with_session "/launch/signature_check/1", {}
+    post_with_session "/test/signature_check/1", {'launch_url' => 'http://www.example.com/launch'}
+    post_with_session "/validate/signature_check/1", {'valid' => 'Yes'}
     json = JSON.parse(last_response.body)
     json['correct'].should == false
   end

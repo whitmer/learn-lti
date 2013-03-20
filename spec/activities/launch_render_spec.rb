@@ -10,15 +10,15 @@ describe 'Activity Rendering' do
 
   it "should not let the user sneak ahead in the flow" do
     fake_launch
-    get "/launch/post_launch/1"
+    get_with_session "/launch/post_launch/1"
     last_response.body.should == "Too far too soon!"
-    post "/test/post_launch/1"
+    post_with_session "/test/post_launch/1"
     last_response.body.should == "Too far too soon!"
   end
   
-  it "should require launch url for post tests" do
+  it "should require launch url for post_with_session tests" do
     fake_launch({"farthest_for_post_launch" => 1})
-    post "/test/post_launch/1", {}
+    post_with_session "/test/post_launch/1", {}
     last_response.body.should == "Launch URL required"
   end
   
@@ -27,7 +27,7 @@ describe 'Activity Rendering' do
       activity.tests.each_with_index do |test, idx|
         it "should allow checking for #{test[:args][:param]}" do
           fake_launch({"farthest_for_#{activity.id}" => activity.tests.length})
-          get "/launch/#{activity.id}/#{idx}", {}
+          get_with_session "/launch/#{activity.id}/#{idx}", {}
           last_response.body[activity.tests[idx][:args][:explanation][0, 100]].should_not == nil
           html = Nokogiri::HTML(last_response.body)
           if test[:type] == :fill_in
@@ -52,7 +52,7 @@ describe 'Activity Rendering' do
         if test[:type] == :fill_in || test[:type] == :redirect || test[:type] == :grade_passback
           it "should allow posting to launch for #{test[:args][:param]}" do
             fake_launch({"farthest_for_#{activity.id}" => activity.tests.length})
-            post "/test/#{activity.id}/#{idx}", {'launch_url' => 'http://www.example.com/launch/it/up'}
+            post_with_session "/test/#{activity.id}/#{idx}", {'launch_url' => 'http://www.example.com/launch/it/up'}
             last_response.should be_ok
             html = Nokogiri::HTML(last_response.body)
             html.css('form#ltiLaunchForm').length.should == 1

@@ -10,14 +10,14 @@ describe 'Masquerading Tests' do
   
   it "should check for correct masquerading error message" do
     fake_launch({'farthest_for_masquerading_and_ids' => 10})
-    get "/launch/masquerading_and_ids/0", {}
+    get_with_session "/launch/masquerading_and_ids/0", {}
     answer = "Invalid as_user_id"
-    post "/validate/masquerading_and_ids/0", {'answer' => answer}
+    post_with_session "/validate/masquerading_and_ids/0", {'answer' => answer}
     json = JSON.parse(last_response.body)
     json['answer'].should == answer
     json['correct'].should == true
 
-    post "/validate/masquerading_and_ids/0", {'answer' => answer + "a"}
+    post_with_session "/validate/masquerading_and_ids/0", {'answer' => answer + "a"}
     json = JSON.parse(last_response.body)
     json['answer'].should == answer
     json['correct'].should == false
@@ -25,10 +25,10 @@ describe 'Masquerading Tests' do
   
   it "should check for correct SIS id parameter" do
     fake_launch({'farthest_for_masquerading_and_ids' => 10})
-    get "/launch/masquerading_and_ids/1", {}
+    get_with_session "/launch/masquerading_and_ids/1", {}
     answer = "/api/v1/users/sis_user_id:user_1/profile"
     Api.any_instance.should_receive(:get).with('/api/v1/users/self/profile').and_return({'id' => 1})
-    post "/validate/masquerading_and_ids/1", {'answer' => answer}
+    post_with_session "/validate/masquerading_and_ids/1", {'answer' => answer}
     json = JSON.parse(last_response.body)
     json['answer'].should == answer
     json['correct'].should == true      
@@ -36,10 +36,10 @@ describe 'Masquerading Tests' do
   
   it "should check for correctly-encoded SIS id parameter" do
     fake_launch({'farthest_for_masquerading_and_ids' => 10})
-    get "/launch/masquerading_and_ids/2", {}
+    get_with_session "/launch/masquerading_and_ids/2", {}
     answer = "hex:sis_user_id:312f626f62406578616d706c652e636f6d"
     Api.any_instance.should_receive(:get).with('/api/v1/users/self/profile').and_return({'id' => 1, 'primary_email' => 'bob@example.com'})
-    post "/validate/masquerading_and_ids/2", {'answer' => answer}
+    post_with_session "/validate/masquerading_and_ids/2", {'answer' => answer}
     json = JSON.parse(last_response.body)
     json['answer'].should == answer
     json['correct'].should == true      
@@ -84,7 +84,7 @@ end
 #     generated in your profile then it allows you to make requests for your own
 #     information without having to remember your user ID, but it also applies for
 #     any other access tokens.</p>
-#     <p>Let's see if you can use it. Get the 
+#     <p>Let's see if you can use it. get_with_session the 
 #     <a href="https://canvas.instructure.com/doc/api/all_resources.html#method.enrollments_api.index">list of
 #     enrollments</a> tied to your personal account and enter the ID of the last enrollment
 #     provided in the first page of results using the default number of results per page.</p>

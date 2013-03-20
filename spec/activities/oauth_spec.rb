@@ -10,64 +10,64 @@ describe 'OAuth Tests' do
   
   it "should succeed when step 1 is correctly run" do
     fake_launch({'farthest_for_oauth' => 10})
-    get "/launch/oauth/0", {}
-    post "/oauth_start/oauth/0", {'url' => 'http://www.example.com/login'}
+    get_with_session "/launch/oauth/0", {}
+    post_with_session "/oauth_start/oauth/0", {'url' => 'http://www.example.com/login'}
     last_response.location.should == 'http://www.example.com/login'
     path = "/login/oauth2/auth?client_id=#{@user.id}&response_type=code&redirect_uri=#{CGI.escape("http://www.example.com/auth")}"
-    get path
+    get_with_session path
     @user.reload
     last_response.location.should == "http://www.example.com/auth?code=#{@user.settings['fake_code']}"
-    post "/validate/oauth/0", {'answer' => 'http://example.org/login/oauth2/auth'}
+    post_with_session "/validate/oauth/0", {'answer' => 'http://example.org/login/oauth2/auth'}
     json = JSON.parse(last_response.body)
     json['correct'].should == true
   end
   
   it "should fail when step 1 skips the launch step" do
     fake_launch({'farthest_for_oauth' => 10})
-    get "/launch/oauth/0", {}
+    get_with_session "/launch/oauth/0", {}
     path = "/login/oauth2/auth?client_id=#{@user.id}&response_type=code&redirect_uri=#{CGI.escape("http://www.example.com/auth")}"
-    get path
+    get_with_session path
     @user.reload
     last_response.body.should == "Missing the launch step"
-    post "/validate/oauth/0", {'answer' => 'http://example.org/login/oauth2/auth'}
+    post_with_session "/validate/oauth/0", {'answer' => 'http://example.org/login/oauth2/auth'}
     json = JSON.parse(last_response.body)
     json['correct'].should == false
   end
   
   it "should fail when step 1 hasn't happened yet" do
     fake_launch({'farthest_for_oauth' => 10})
-    get "/launch/oauth/0", {}
-    post "/validate/oauth/0", {'answer' => 'http://example.org/login/oauth2/auth'}
+    get_with_session "/launch/oauth/0", {}
+    post_with_session "/validate/oauth/0", {'answer' => 'http://example.org/login/oauth2/auth'}
     json = JSON.parse(last_response.body)
     json['correct'].should == false
-    json['answer'].should == 'http://example.org/login/oauth2/auth (plus hitting this endpoint)'
+    json['error'].should == "You haven't hit the endpoint yet"
   end
   
   it "should fail when the wrong value is entered for step 1" do
     fake_launch({'farthest_for_oauth' => 10})
-    get "/launch/oauth/0", {}
-    post "/oauth_start/oauth/0", {'url' => 'http://www.example.com/login'}
+    get_with_session "/launch/oauth/0", {}
+    post_with_session "/oauth_start/oauth/0", {'url' => 'http://www.example.com/login'}
     last_response.location.should == 'http://www.example.com/login'
     path = "/login/oauth2/auth?client_id=#{@user.id}&response_type=code&redirect_uri=#{CGI.escape("http://www.example.com/auth")}"
-    get path
+    get_with_session path
     @user.reload
     last_response.location.should == "http://www.example.com/auth?code=#{@user.settings['fake_code']}"
-    post "/validate/oauth/0", {'answer' => 'http://example.org/login/oauth2/auth/'}
+    post_with_session "/validate/oauth/0", {'answer' => 'http://example.org/login/oauth2/auth/'}
     json = JSON.parse(last_response.body)
     json['correct'].should == false
-    json['answer'].should == 'http://example.org/login/oauth2/auth (plus hitting this endpoint)'
+    json['answer'].should == 'http://example.org/login/oauth2/auth'
   end
   
   it "should succeed when code is correctly retrieved for step 2" do
     fake_launch({'farthest_for_oauth' => 10})
-    get "/launch/oauth/1", {}
-    post "/oauth_start/oauth/1", {'url' => 'http://www.example.com/login'}
+    get_with_session "/launch/oauth/1", {}
+    post_with_session "/oauth_start/oauth/1", {'url' => 'http://www.example.com/login'}
     last_response.location.should == 'http://www.example.com/login'
     path = "/login/oauth2/auth?client_id=#{@user.id}&response_type=code&redirect_uri=#{CGI.escape("http://www.example.com/auth")}"
-    get path
+    get_with_session path
     @user.reload
     last_response.location.should == "http://www.example.com/auth?code=#{@user.settings['fake_code']}"
-    post "/validate/oauth/1", {'answer' => @user.settings['fake_code']}
+    post_with_session "/validate/oauth/1", {'answer' => @user.settings['fake_code']}
     json = JSON.parse(last_response.body)
     json['correct'].should == true
     json['answer'].should == @user.settings['fake_code']
@@ -75,14 +75,14 @@ describe 'OAuth Tests' do
   
   it "should fail when incorrect code is retrieved for step 2" do
     fake_launch({'farthest_for_oauth' => 10})
-    get "/launch/oauth/1", {}
-    post "/oauth_start/oauth/1", {'url' => 'http://www.example.com/login'}
+    get_with_session "/launch/oauth/1", {}
+    post_with_session "/oauth_start/oauth/1", {'url' => 'http://www.example.com/login'}
     last_response.location.should == 'http://www.example.com/login'
     path = "/login/oauth2/auth?client_id=#{@user.id}&response_type=code&redirect_uri=#{CGI.escape("http://www.example.com/auth")}"
-    get path
+    get_with_session path
     @user.reload
     last_response.location.should == "http://www.example.com/auth?code=#{@user.settings['fake_code']}"
-    post "/validate/oauth/1", {'answer' => "aaa"}
+    post_with_session "/validate/oauth/1", {'answer' => "aaa"}
     json = JSON.parse(last_response.body)
     json['correct'].should == false
     json['answer'].should == @user.settings['fake_code']
@@ -90,11 +90,11 @@ describe 'OAuth Tests' do
   
   it "should not have the correct code unless step 2 is finished" do
     fake_launch({'farthest_for_oauth' => 10})
-    get "/launch/oauth/1", {}
-    post "/oauth_start/oauth/1", {'url' => 'http://www.example.com/login'}
+    get_with_session "/launch/oauth/1", {}
+    post_with_session "/oauth_start/oauth/1", {'url' => 'http://www.example.com/login'}
     last_response.location.should == 'http://www.example.com/login'
     @user.reload.settings['fake_code'].should == nil
-    post "/validate/oauth/1", {'answer' => ""}
+    post_with_session "/validate/oauth/1", {'answer' => ""}
     json = JSON.parse(last_response.body)
     json['correct'].should == false
     json['error'].should == "still waiting for auth step..."
@@ -102,16 +102,16 @@ describe 'OAuth Tests' do
   
   it "should correctly check for access denied" do
     fake_launch({'farthest_for_oauth' => 10})
-    get "/launch/oauth/2", {}
+    get_with_session "/launch/oauth/2", {}
     Samplers.should_receive(:random).with(2).and_return(0)
-    post "/oauth_start/oauth/2", {'url' => 'http://www.example.com/login'}
+    post_with_session "/oauth_start/oauth/2", {'url' => 'http://www.example.com/login'}
     session['access_denied'].should == true
     last_response.location.should == 'http://www.example.com/login'
     path = "/login/oauth2/auth?client_id=#{@user.id}&response_type=code&redirect_uri=#{CGI.escape("http://www.example.com/auth")}"
-    get path
+    get_with_session path
     @user.reload
     last_response.location.should == "http://www.example.com/auth?error=access_denied"
-    post "/validate/oauth/2", {'valid' => 'No'}
+    post_with_session "/validate/oauth/2", {'valid' => 'No'}
     json = JSON.parse(last_response.body)
     json['correct'].should == true
     json['valid'].should == false
@@ -119,16 +119,16 @@ describe 'OAuth Tests' do
   
   it "should correctly check for no access denied" do
     fake_launch({'farthest_for_oauth' => 10})
-    get "/launch/oauth/2", {}
+    get_with_session "/launch/oauth/2", {}
     Samplers.should_receive(:random).with(2).and_return(1)
-    post "/oauth_start/oauth/2", {'url' => 'http://www.example.com/login'}
+    post_with_session "/oauth_start/oauth/2", {'url' => 'http://www.example.com/login'}
     session['access_denied'].should == false
     last_response.location.should == 'http://www.example.com/login'
     path = "/login/oauth2/auth?client_id=#{@user.id}&response_type=code&redirect_uri=#{CGI.escape("http://www.example.com/auth")}"
-    get path
+    get_with_session path
     @user.reload
     last_response.location.should == "http://www.example.com/auth?code=#{@user.settings['fake_code']}"
-    post "/validate/oauth/2", {'valid' => 'Yes'}
+    post_with_session "/validate/oauth/2", {'valid' => 'Yes'}
     json = JSON.parse(last_response.body)
     json['correct'].should == true
     json['valid'].should == true
@@ -136,34 +136,34 @@ describe 'OAuth Tests' do
   
   it "should succeed when token is correctly retrieved for step 3" do
     fake_launch({'farthest_for_oauth' => 10})
-    get "/launch/oauth/3", {}
-    post "/oauth_start/oauth/3", {'url' => 'http://www.example.com/login'}
+    get_with_session "/launch/oauth/3", {}
+    post_with_session "/oauth_start/oauth/3", {'url' => 'http://www.example.com/login'}
     last_response.location.should == 'http://www.example.com/login'
     path = "/login/oauth2/auth?client_id=#{@user.id}&response_type=code&redirect_uri=#{CGI.escape("http://www.example.com/auth")}"
-    get path
+    get_with_session path
     @user.reload
     last_response.location.should == "http://www.example.com/auth?code=#{@user.settings['fake_code']}"
-    post "/login/oauth2/token", {'redirect_uri' => "http://www.example.com/auth", 'client_id' => @user.id.to_s, 'client_secret' => @user.settings['fake_secret'], 'code' => @user.settings['fake_code']}
+    post_with_session "/login/oauth2/token", {'redirect_uri' => "http://www.example.com/auth", 'client_id' => @user.id.to_s, 'client_secret' => @user.settings['fake_secret'], 'code' => @user.settings['fake_code']}
     json = JSON.parse(last_response.body)
     json['access_token'].should == @user.reload.settings['fake_token']
-    post "/validate/oauth/3", {'answer' => json['access_token']}
+    post_with_session "/validate/oauth/3", {'answer' => json['access_token']}
     json = JSON.parse(last_response.body)
     json['correct'].should == true
   end
   
   it "should fail when incorrect token is entered for step 3" do
     fake_launch({'farthest_for_oauth' => 10})
-    get "/launch/oauth/3", {}
-    post "/oauth_start/oauth/3", {'url' => 'http://www.example.com/login'}
+    get_with_session "/launch/oauth/3", {}
+    post_with_session "/oauth_start/oauth/3", {'url' => 'http://www.example.com/login'}
     last_response.location.should == 'http://www.example.com/login'
     path = "/login/oauth2/auth?client_id=#{@user.id}&response_type=code&redirect_uri=#{CGI.escape("http://www.example.com/auth")}"
-    get path
+    get_with_session path
     @user.reload
     last_response.location.should == "http://www.example.com/auth?code=#{@user.settings['fake_code']}"
-    post "/login/oauth2/token", {'redirect_uri' => "http://www.example.com/auth", 'client_id' => @user.id.to_s, 'client_secret' => @user.settings['fake_secret'], 'code' => @user.settings['fake_code']}
+    post_with_session "/login/oauth2/token", {'redirect_uri' => "http://www.example.com/auth", 'client_id' => @user.id.to_s, 'client_secret' => @user.settings['fake_secret'], 'code' => @user.settings['fake_code']}
     json = JSON.parse(last_response.body)
     json['access_token'].should == @user.reload.settings['fake_token']
-    post "/validate/oauth/3", {'answer' => 'zzz'}
+    post_with_session "/validate/oauth/3", {'answer' => 'zzz'}
     json = JSON.parse(last_response.body)
     json['correct'].should == false
     json['answer'].should == @user.settings['fake_token']
@@ -171,16 +171,16 @@ describe 'OAuth Tests' do
   
   it "should not have the correct token unless step 3 is completed" do
     fake_launch({'farthest_for_oauth' => 10})
-    get "/launch/oauth/3", {}
-    post "/oauth_start/oauth/3", {'url' => 'http://www.example.com/login'}
+    get_with_session "/launch/oauth/3", {}
+    post_with_session "/oauth_start/oauth/3", {'url' => 'http://www.example.com/login'}
     @user.reload.settings['fake_token'].should be_nil
     last_response.location.should == 'http://www.example.com/login'
     path = "/login/oauth2/auth?client_id=#{@user.id}&response_type=code&redirect_uri=#{CGI.escape("http://www.example.com/auth")}"
-    get path
+    get_with_session path
     @user.reload
     last_response.location.should == "http://www.example.com/auth?code=#{@user.settings['fake_code']}"
     @user.reload.settings['fake_token'].should be_nil
-    post "/validate/oauth/3", {'answer' => @user.settings['fake_token']}
+    post_with_session "/validate/oauth/3", {'answer' => @user.settings['fake_token']}
     json = JSON.parse(last_response.body)
     json['correct'].should == false
     json['error'].should == 'still waiting for token exchange...'
@@ -188,139 +188,140 @@ describe 'OAuth Tests' do
   
   it "should succeed when logout happens correctly" do
     fake_launch({'farthest_for_oauth' => 10})
-    get "/launch/oauth/4", {}
+    get_with_session "/launch/oauth/4", {}
+    last_session = session
     delete "/login/oauth2/token", {'access_token' => @user.settings['fake_token']}
     last_response.should be_ok
-    post "/validate/oauth/4", {'answer' => "200"}
+    post "/validate/oauth/4", {'answer' => "200"}, 'rack.session' => last_session
     json = JSON.parse(last_response.body)
     json['correct'].should == true
   end
   
   it "should fail when logout hasn't happened correctly" do
     fake_launch({'farthest_for_oauth' => 10})
-    get "/launch/oauth/4", {}
-    post "/validate/oauth/4", {'answer' => "200"}
+    get_with_session "/launch/oauth/4", {}
+    post_with_session "/validate/oauth/4", {'answer' => "200"}
     json = JSON.parse(last_response.body)
     json['correct'].should == false
-    json['answer'].should == "200 (plus correctly logging out)"
+    json['error'].should == "Haven't seen a logout yet"
   end
   
   it "should check for correctly expired access tokens" do
     fake_launch({'farthest_for_oauth' => 10})
-    get "/launch/oauth/5", {}
+    get_with_session "/launch/oauth/5", {}
     
-    get "/api/v1/secret/oauth/5/#{@user.id}/#{@user.settings['verification']}", {'access_token' => 'zzz'}
+    get_with_session "/api/v1/secret/oauth/5/#{@user.id}/#{@user.settings['verification']}", {'access_token' => 'zzz'}
     last_response.body.should == 'Invalid access token'
     Samplers.should_receive(:random).with(2).and_return(0)
-    get "/api/v1/secret/oauth/5/#{@user.id}/#{@user.settings['verification']}", {'access_token' => @user.settings['fake_token']}
+    get_with_session "/api/v1/secret/oauth/5/#{@user.id}/#{@user.settings['verification']}", {'access_token' => @user.settings['fake_token']}
     json = JSON.parse(last_response.body)
     json['status'].should == 'unauthorized'
-    post "/validate/oauth/5", {'valid' => 'No'}
+    post_with_session "/validate/oauth/5", {'valid' => 'No'}
     json = JSON.parse(last_response.body)
     json['correct'].should == true
   end
   
   it "should succeed when access token isn't expired" do
     fake_launch({'farthest_for_oauth' => 10})
-    get "/launch/oauth/5", {}
+    get_with_session "/launch/oauth/5", {}
     
-    get "/api/v1/secret/oauth/5/#{@user.id}/#{@user.settings['verification']}", {'access_token' => 'zzz'}
+    get_with_session "/api/v1/secret/oauth/5/#{@user.id}/#{@user.settings['verification']}", {'access_token' => 'zzz'}
     last_response.body.should == 'Invalid access token'
     Samplers.should_receive(:random).with(2).and_return(1)
-    get "/api/v1/secret/oauth/5/#{@user.id}/#{@user.settings['verification']}", {'access_token' => @user.settings['fake_token']}
+    get_with_session "/api/v1/secret/oauth/5/#{@user.id}/#{@user.settings['verification']}", {'access_token' => @user.settings['fake_token']}
     json = JSON.parse(last_response.body)
     json['secret'].should_not be_nil
-    post "/validate/oauth/5", {'valid' => 'Yes'}
+    post_with_session "/validate/oauth/5", {'valid' => 'Yes'}
     json = JSON.parse(last_response.body)
     json['correct'].should == true
   end
   
   it "should fail when the user thinks expiration happened but it hasn't" do
     fake_launch({'farthest_for_oauth' => 10})
-    get "/launch/oauth/5", {}
+    get_with_session "/launch/oauth/5", {}
     
-    get "/api/v1/secret/oauth/5/#{@user.id}/#{@user.settings['verification']}", {'access_token' => 'zzz'}
+    get_with_session "/api/v1/secret/oauth/5/#{@user.id}/#{@user.settings['verification']}", {'access_token' => 'zzz'}
     last_response.body.should == 'Invalid access token'
     Samplers.should_receive(:random).with(2).and_return(1)
-    get "/api/v1/secret/oauth/5/#{@user.id}/#{@user.settings['verification']}", {'access_token' => @user.settings['fake_token']}
+    get_with_session "/api/v1/secret/oauth/5/#{@user.id}/#{@user.settings['verification']}", {'access_token' => @user.settings['fake_token']}
     json = JSON.parse(last_response.body)
     json['secret'].should_not be_nil
-    post "/validate/oauth/5", {'valid' => 'No'}
+    post_with_session "/validate/oauth/5", {'valid' => 'No'}
     json = JSON.parse(last_response.body)
     json['correct'].should == false
   end
   
   it "should fail when the user misses expiration response" do
     fake_launch({'farthest_for_oauth' => 10})
-    get "/launch/oauth/5", {}
+    get_with_session "/launch/oauth/5", {}
     
-    get "/api/v1/secret/oauth/5/#{@user.id}/#{@user.settings['verification']}", {'access_token' => 'zzz'}
+    get_with_session "/api/v1/secret/oauth/5/#{@user.id}/#{@user.settings['verification']}", {'access_token' => 'zzz'}
     last_response.body.should == 'Invalid access token'
     Samplers.should_receive(:random).with(2).and_return(0)
-    get "/api/v1/secret/oauth/5/#{@user.id}/#{@user.settings['verification']}", {'access_token' => @user.settings['fake_token']}
+    get_with_session "/api/v1/secret/oauth/5/#{@user.id}/#{@user.settings['verification']}", {'access_token' => @user.settings['fake_token']}
     json = JSON.parse(last_response.body)
     json['status'].should == 'unauthorized'
-    post "/validate/oauth/5", {'valid' => 'Yes'}
+    post_with_session "/validate/oauth/5", {'valid' => 'Yes'}
     json = JSON.parse(last_response.body)
     json['correct'].should == false
   end
   
   it "should check for correctly throttled requests" do
     fake_launch({'farthest_for_oauth' => 10})
-    get "/launch/oauth/6", {}
+    get_with_session "/launch/oauth/6", {}
     
-    get "/api/v1/secret/oauth/6/#{@user.id}/#{@user.settings['verification']}", {'access_token' => 'zzz'}
+    get_with_session "/api/v1/secret/oauth/6/#{@user.id}/#{@user.settings['verification']}", {'access_token' => 'zzz'}
     last_response.body.should == 'Invalid access token'
     Samplers.should_receive(:random).with(2).and_return(0)
-    get "/api/v1/secret/oauth/6/#{@user.id}/#{@user.settings['verification']}", {'access_token' => @user.settings['fake_token']}
+    get_with_session "/api/v1/secret/oauth/6/#{@user.id}/#{@user.settings['verification']}", {'access_token' => @user.settings['fake_token']}
     json = JSON.parse(last_response.body)
     json['status'].should == 'throttled'
-    post "/validate/oauth/6", {'valid' => 'No'}
+    post_with_session "/validate/oauth/6", {'valid' => 'No'}
     json = JSON.parse(last_response.body)
     json['correct'].should == true
   end
   
   it "should succeed when not throttled" do
     fake_launch({'farthest_for_oauth' => 10})
-    get "/launch/oauth/6", {}
+    get_with_session "/launch/oauth/6", {}
     
-    get "/api/v1/secret/oauth/6/#{@user.id}/#{@user.settings['verification']}", {'access_token' => 'zzz'}
+    get_with_session "/api/v1/secret/oauth/6/#{@user.id}/#{@user.settings['verification']}", {'access_token' => 'zzz'}
     last_response.body.should == 'Invalid access token'
     Samplers.should_receive(:random).with(2).and_return(1)
-    get "/api/v1/secret/oauth/6/#{@user.id}/#{@user.settings['verification']}", {'access_token' => @user.settings['fake_token']}
+    get_with_session "/api/v1/secret/oauth/6/#{@user.id}/#{@user.settings['verification']}", {'access_token' => @user.settings['fake_token']}
     json = JSON.parse(last_response.body)
     json['secret'].should_not be_nil
-    post "/validate/oauth/6", {'valid' => 'Yes'}
+    post_with_session "/validate/oauth/6", {'valid' => 'Yes'}
     json = JSON.parse(last_response.body)
     json['correct'].should == true
   end
   
   it "should fail when the user things throttling has happened but it hasn't" do
     fake_launch({'farthest_for_oauth' => 10})
-    get "/launch/oauth/6", {}
+    get_with_session "/launch/oauth/6", {}
     
-    get "/api/v1/secret/oauth/6/#{@user.id}/#{@user.settings['verification']}", {'access_token' => 'zzz'}
+    get_with_session "/api/v1/secret/oauth/6/#{@user.id}/#{@user.settings['verification']}", {'access_token' => 'zzz'}
     last_response.body.should == 'Invalid access token'
     Samplers.should_receive(:random).with(2).and_return(1)
-    get "/api/v1/secret/oauth/6/#{@user.id}/#{@user.settings['verification']}", {'access_token' => @user.settings['fake_token']}
+    get_with_session "/api/v1/secret/oauth/6/#{@user.id}/#{@user.settings['verification']}", {'access_token' => @user.settings['fake_token']}
     json = JSON.parse(last_response.body)
     json['secret'].should_not be_nil
-    post "/validate/oauth/6", {'valid' => 'No'}
+    post_with_session "/validate/oauth/6", {'valid' => 'No'}
     json = JSON.parse(last_response.body)
     json['correct'].should == false
   end
   
   it "should fail when the user misses throttling response" do
     fake_launch({'farthest_for_oauth' => 10})
-    get "/launch/oauth/6", {}
+    get_with_session "/launch/oauth/6", {}
     
-    get "/api/v1/secret/oauth/6/#{@user.id}/#{@user.settings['verification']}", {'access_token' => 'zzz'}
+    get_with_session "/api/v1/secret/oauth/6/#{@user.id}/#{@user.settings['verification']}", {'access_token' => 'zzz'}
     last_response.body.should == 'Invalid access token'
     Samplers.should_receive(:random).with(2).and_return(0)
-    get "/api/v1/secret/oauth/6/#{@user.id}/#{@user.settings['verification']}", {'access_token' => @user.settings['fake_token']}
+    get_with_session "/api/v1/secret/oauth/6/#{@user.id}/#{@user.settings['verification']}", {'access_token' => @user.settings['fake_token']}
     json = JSON.parse(last_response.body)
     json['status'].should == 'throttled'
-    post "/validate/oauth/6", {'valid' => 'Yes'}
+    post_with_session "/validate/oauth/6", {'valid' => 'Yes'}
     json = JSON.parse(last_response.body)
     json['correct'].should == false
   end
@@ -407,7 +408,7 @@ end
 #     <p>For this test, and for all the tests in this activity,
 #     you'll be using a different auth endpoint than you would 
 #     use with Canvas. The workflow is the same, but when you 
-#     want to talk to Canvas you'll need to get a Developer Key
+#     want to talk to Canvas you'll need to get_with_session a Developer Key
 #     and use the Canvas Oauth endpoint, 
 #     <code>/login/oauth2/auth</code>. For now, use the URL id and secret
 #     specified in the testing box.</p>
@@ -419,7 +420,7 @@ end
 #   EOF
 #   
 #   oauth.oauth_test :oauth_return, :phase => :step_2, :explanation => <<-EOF
-#     <p>In step two of the OAuth dance, the user is going to get redirected
+#     <p>In step two of the OAuth dance, the user is going to get_with_session redirected
 #     back to the <code>redirect_uri</code> you provided. If they actually
 #     authorized your app then they'll hit your endpoint with an additional
 #     query parameter, <code>code</code>. You want to grab that parameter,
@@ -429,7 +430,7 @@ end
 #   
 #   oauth.oauth_test :access_denied, :phase => :step_2, :pick_access_denied => true, :allow_access_denied => true, :iterations => 5, :explanation => <<-EOF
 #     <p>Staying on step two for a minute, if someone decides at authorization time
-#     that they actually don't want to authorize your app, you'll get a 
+#     that they actually don't want to authorize your app, you'll get_with_session a 
 #     different query parameter (this applies for mobile apps as well), 
 #     <code>error=access_denied</code>. This means the user did not authorize
 #     your application to make API calls on their behalf.</p>
@@ -441,14 +442,14 @@ end
 #     so you really shouldn't be showing them an angry error page.
 #     Keep it friendly and give them the option to re-authorize if they want.</p>
 #     <p>For this test, you're going to go through the first two steps of the 
-#     OAuth dance five times. Each time you'll either get a code back or an
+#     OAuth dance five times. Each time you'll either get_with_session a code back or an
 #     "access denied" error. Tell me which you got each time.</p>
 #   EOF
 #   
 #   oauth.oauth_test :oauth_token_exchange, :phase => :step_3, :explanation => <<-EOF
 #     <p>Now that you've successfully gotten a code, you need to exchange that for
 #     an actual access token. To do so you're going to make a server-to-server
-#     POST request to the correct endpoint (for testing it's up in the test box, for
+#     post_with_session request to the correct endpoint (for testing it's up in the test box, for
 #     Canvas it's <code>/login/oauth2/token</code>). You'll need to send along
 #     the following parameters:</p>
 #     <dl>
@@ -465,7 +466,7 @@ end
 #     their profile page. At any point they can delete the token without your
 #     knowing. Also, access tokens can potentially expire depending on how they're
 #     created.</p>
-#     <p>When a token expires or is deleted, you'll get the same message as if you'd used
+#     <p>When a token expires or is deleted, you'll get_with_session the same message as if you'd used
 #     an invalid access token. Either way you're obviously going to need a 
 #     different token, so you should re-initiate the oauth flow.</p>
 #     <p>For this test, make an API call to the URL shown in the test box, using

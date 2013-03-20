@@ -4,7 +4,7 @@ describe 'Models' do
   include Rack::Test::Methods
   
   def app
-    Sinatra::Application
+    TestLti
   end
   
   describe "User" do

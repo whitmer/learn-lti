@@ -53,7 +53,7 @@ describe 'LTI Launch' do
   describe "activity launch" do
     it "should fail if session is lost" do
       get "/launch/no-activity/0"
-      assert_error_page("Session lost")
+      assert_error_page("No user information found")
     end
     
     it "should fail if no activity found" do
@@ -80,7 +80,7 @@ describe 'LTI Launch' do
   describe "activity test" do
     it "should fail if session is lost" do
       post "/test/no-activity/0"
-      assert_error_page("Session lost")
+      assert_error_page("No user information found")
     end
     
     it "should fail if no activity found" do

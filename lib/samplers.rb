@@ -5,6 +5,8 @@ module Samplers
     'select_link' => 'basic_lti'
   }
   RETURN_TYPES = ['link', 'file', 'image', 'iframe', 'link', 'basic_lti', 'oembed']
+  UPLOAD_ERROR_MESSAGES = ["Germany has declared war on the Jones boys.", "Fly, yes. Land, no.", "Why did it have to be snakes?", "\"X\" never, ever marks the spot.", "You are named after the dog?"]
+  
   def self.pick_return_types
     RETURN_TYPES.sample(rand(4)).join(',')
   end
