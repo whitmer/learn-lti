@@ -49,6 +49,11 @@ module Sinatra
         @user
       end
       
+      def load_activity
+        @activity = Activity.find(params['activity'])
+        halt error("Invalid activity") if !@activity
+      end
+      
       def load_user_and_activity
         load_user
         @index = params[:index].to_i

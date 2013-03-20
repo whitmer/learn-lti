@@ -1,0 +1,13 @@
+<h2>Activity Stats</h2>
+<% [:lti, :api].each do |key| %>
+  <h3><%= key.to_s.upcase %> Stats</h3>
+  <% Activity.all(key).each do |activity| %>
+    <div class='activity' rel='/api/v1/stats/<%= activity.id %>' style="margin-left: 10px;">
+      <%= activity.id %>
+      <div class="pagination" style="margin-top: -3px; margin-bottom: 10px;">
+        <ul>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+<% end %>

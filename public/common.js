@@ -91,4 +91,22 @@ $(document).ready(function() {
       }
     });
   });
+  
+  $(".activity").each(function() {
+    var $obj = $(this);
+    $.getJSON($(this).attr('rel'), function(data) {
+      var tally = 0;
+      for(var idx = data.max - 1; idx >= 0; idx--) {
+        var count = data.counts[idx] || 0;
+        tally = tally + count;
+        var html = "<li><a>" + tally + "</a></li>";
+        var $li = $(html);
+        $li.attr('title', "Learners who have made it to lesson " + idx).css('cursor', 'default');
+        if(tally > 0 && tally < data.total / 2) {
+          $li.find("a").addClass('label label-info');
+        }
+        $obj.find("ul").prepend($li);
+      }
+    });
+  });
 });
