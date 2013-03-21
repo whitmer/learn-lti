@@ -15,6 +15,7 @@ module Sinatra
         if json['access_token']
           @user.settings['access_token'] = json['access_token']
           @user.settings['api_host'] = @api_host
+          @user.save
           redirect to(session['return_path'])
         else
           error("Authorization failed")
