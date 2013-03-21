@@ -310,6 +310,7 @@ module Sinatra
         end
         @launch_data = @consumer.generate_launch_data
         k, v = @launch_data.each_pair.detect{|k, v| k == param}
+        session['last_sig'] = @launch_data['oauth_signature']
       
         if @test[:args][:assignment] && @test[:args][:score]
           v = @launch.id
@@ -336,7 +337,7 @@ module Sinatra
             if make_invalid
               can_be_blank = false
               new_answer = "_bad_"
-              @launch_data[k] = v.reverse
+              @launch_data[k] = @consumer.generate_launch_data['oauth_signature']
             end
           end
           if @test[:args][:allow_old]

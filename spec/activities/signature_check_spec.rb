@@ -13,6 +13,8 @@ describe 'Signature Check Activity' do
     fake_launch({'farthest_for_signature_check' => 10})
     get_with_session "/launch/signature_check/2", {}
     post_with_session "/test/signature_check/2", {'launch_url' => 'http://www.example.com/launch'}
+    html = Nokogiri::HTML(last_response.body)
+    html.css("input[name='oauth_signature']")[0]['value'].should == session['last_sig']
     post_with_session "/validate/signature_check/2", {'valid' => 'Yes'}
     json = JSON.parse(last_response.body)
     json['correct'].should == true
@@ -28,17 +30,21 @@ describe 'Signature Check Activity' do
     fake_launch({'farthest_for_signature_check' => 10})
     get_with_session "/launch/signature_check/2", {}
     post_with_session "/test/signature_check/2", {'launch_url' => 'http://www.example.com/launch'}
+    html = Nokogiri::HTML(last_response.body)
+    html.css("input[name='oauth_signature']")[0]['value'].should == session['last_sig']
     post_with_session "/validate/signature_check/2", {'answer' => session['answer_for_signature_check_2']}
     json = JSON.parse(last_response.body)
     json['correct'].should == false
   end
   
   it "should fail when marked as valid with the wrong signature" do
-    Samplers.should_receive(:random).and_return(1)
+    Samplers.should_receive(:random).and_return(0)
     fake_launch({'farthest_for_signature_check' => 10})
     get_with_session "/launch/signature_check/2", {}
     post_with_session "/test/signature_check/2", {'launch_url' => 'http://www.example.com/launch'}
-    post_with_session "/validate/signature_check/2", {'valid' => 'No'}
+    html = Nokogiri::HTML(last_response.body)
+    html.css("input[name='oauth_signature']")[0]['value'].should_not == session['last_sig']
+    post_with_session "/validate/signature_check/2", {'valid' => 'Yes'}
     json = JSON.parse(last_response.body)
     json['correct'].should == false
   end
@@ -48,17 +54,19 @@ describe 'Signature Check Activity' do
     fake_launch({'farthest_for_signature_check' => 10})
     get_with_session "/launch/signature_check/2", {}
     post_with_session "/test/signature_check/2", {'launch_url' => 'http://www.example.com/launch'}
+    html = Nokogiri::HTML(last_response.body)
+    html.css("input[name='oauth_signature']")[0]['value'].should_not == session['last_sig']
     post_with_session "/validate/signature_check/2", {'valid' => 'No'}
     json = JSON.parse(last_response.body)
     json['correct'].should == true
   end
   
   it "should fail when marked as invalid with the correct signature" do
-    Samplers.should_receive(:random).and_return(0)
+    Samplers.should_receive(:random).and_return(1)
     fake_launch({'farthest_for_signature_check' => 10})
     get_with_session "/launch/signature_check/2", {}
     post_with_session "/test/signature_check/2", {'launch_url' => 'http://www.example.com/launch'}
-    post_with_session "/validate/signature_check/2", {'valid' => 'Yes'}
+    post_with_session "/validate/signature_check/2", {'valid' => 'No'}
     json = JSON.parse(last_response.body)
     json['correct'].should == false
   end
