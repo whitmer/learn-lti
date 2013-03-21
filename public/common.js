@@ -102,7 +102,7 @@ $(document).ready(function() {
         var html = "<li><a>" + tally + "</a></li>";
         var $li = $(html);
         $li.attr('title', "Learners who have made it to lesson " + idx).css('cursor', 'default');
-        if(tally > 0 && tally < data.total / 2) {
+        if(tally > 0 && tally > data.total / 2) {
           $li.find("a").addClass('label label-info');
         }
         $obj.find("ul").prepend($li);
