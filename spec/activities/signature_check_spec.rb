@@ -112,7 +112,7 @@ describe 'Signature Check Activity' do
   end
   
   it "should succeed when marked as invalid with an old nonce" do
-    Samplers.should_receive(:random).with(3).and_return(1)
+    Samplers.should_not_receive(:random).with(3)
     Samplers.should_receive(:random).with(3.1).and_return(0)
     fake_launch({'farthest_for_signature_check' => 10})
     get_with_session "/launch/signature_check/0", {}, 'rack.session' => {'answer_count_for_signature_check_0' => 1, 'answers_for_signature_check_0' => '12345,12345,12345'}
@@ -125,7 +125,7 @@ describe 'Signature Check Activity' do
   end
   
   it "should fail when marked as valid with an old nonce" do
-    Samplers.should_receive(:random).with(3).and_return(1)
+    Samplers.should_not_receive(:random).with(3)
     Samplers.should_receive(:random).with(3.1).and_return(0)
     fake_launch({'farthest_for_signature_check' => 1})
     get_with_session "/launch/signature_check/0", {}, 'rack.session' => {'answer_count_for_signature_check_0' => 1, 'answers_for_signature_check_0' => '12345,12345,12345'}
@@ -138,7 +138,8 @@ describe 'Signature Check Activity' do
   end
   
   it "should use an old nonce if it hasn't yet after 3 iterations" do
-    Samplers.should_receive(:random).with(3).and_return(1)
+    Samplers.should_not_receive(:random).with(3)
+    Samplers.should_not_receive(:random).with(3.1)
     fake_launch({'farthest_for_signature_check' => 10})
     get_with_session "/launch/signature_check/0", {}, 'rack.session' => {'answer_count_for_signature_check_0' => 3, 'answers_for_signature_check_0' => '12345,123456,1234567'}
     post_with_session "/test/signature_check/0", {'launch_url' => 'http://www.example.com/launch'}
@@ -200,7 +201,6 @@ describe 'Signature Check Activity' do
   end
   
   it "should succeed when marked as valid with an old timestamp" do
-    Samplers.should_receive(:random).with(3).and_return(1)
     Samplers.should_receive(:random).with(3.1).and_return(0)
     fake_launch({'farthest_for_signature_check' => 10})
     get_with_session "/launch/signature_check/1", {}
@@ -211,14 +211,37 @@ describe 'Signature Check Activity' do
   end
   
   it "should fail when marked as invalid with an old timestamp" do
-    Samplers.should_receive(:random).with(3).and_return(1)
     Samplers.should_receive(:random).with(3.1).and_return(0)
+    Samplers.should_not_receive(:random).with(3)
     fake_launch({'farthest_for_signature_check' => 10})
     get_with_session "/launch/signature_check/1", {}
     post_with_session "/test/signature_check/1", {'launch_url' => 'http://www.example.com/launch'}
     post_with_session "/validate/signature_check/1", {'valid' => 'Yes'}
     json = JSON.parse(last_response.body)
     json['correct'].should == false
+  end
+  
+  it "should use an old timestamp if it hasn't yet after 3 iterations" do
+    Samplers.should_not_receive(:random).with(3)
+    Samplers.should_not_receive(:random).with(3.1)
+    fake_launch({'farthest_for_signature_check' => 10})
+    past_times = ([Time.now.to_i.to_s] * 3).join(",")
+    get_with_session "/launch/signature_check/1", {}, 'rack.session' => {'answer_count_for_signature_check_1' => 3, 'answers_for_signature_check_1' => past_times}
+    post_with_session "/test/signature_check/1", {'launch_url' => 'http://www.example.com/launch'}
+    html = Nokogiri::HTML(last_response.body)
+    html.css("input[name='oauth_timestamp']")[0]['value'].to_i.should > 0
+    html.css("input[name='oauth_timestamp']")[0]['value'].to_i.should < (Time.now - 10).to_i
+    html.css("input[name='oauth_timestamp']")[0]['value'].to_i.should < (Date.today - 50).to_time.to_i
+  end
+  
+  it "should send a blank timestamp if it hasn't yet after 4 iterations" do
+    Samplers.should_not_receive(:random).with(3)
+    Samplers.should_receive(:random).with(3.1).and_return(1)
+    fake_launch({'farthest_for_signature_check' => 10})
+    get_with_session "/launch/signature_check/1", {}, 'rack.session' => {'answer_count_for_signature_check_1' => 4, 'answers_for_signature_check_1' => '1,1,1,1'}
+    post_with_session "/test/signature_check/1", {'launch_url' => 'http://www.example.com/launch'}
+    html = Nokogiri::HTML(last_response.body)
+    html.css("input[name='oauth_timestamp']")[0]['value'].should == ""
   end
   
 end

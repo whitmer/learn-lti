@@ -318,12 +318,14 @@ module Sinatra
         elsif @test[:args][:pick_valid]
           session["answers_for_#{params['activity']}_#{@index}"] ||= ""
           so_far = session["answers_for_#{params['activity']}_#{@index}"].split(/,/)
+          can_be_blank = true
           new_answer = v
           if @test[:args][:allow_repeats]
             uniques = so_far - ["_blank_"]
             make_repeat = (so_far.length == @test[:args][:iterations] - 2) && uniques.length == uniques.uniq.length
             make_repeat ||= uniques.length > 0 && (Samplers.random(3.1) == 0)
             if make_repeat
+              can_be_blank = false
               new_answer = uniques[0]
               @launch_data[k] = new_answer
             end
@@ -332,6 +334,7 @@ module Sinatra
             make_invalid = so_far.length == @test[:args][:iterations] - 2 && !so_far.include?("_bad_")
             make_invalid ||= Samplers.random(3) == 0
             if make_invalid
+              can_be_blank = false
               new_answer = "_bad_"
               @launch_data[k] = v.reverse
             end
@@ -339,16 +342,17 @@ module Sinatra
           if @test[:args][:allow_old]
             old_time = (Date.today - 50 - rand(50)).to_time.to_i.to_s
             compare_time = (Date.today - 50).to_time.to_i
-            make_old = so_far.length == @test[:args][:iterations] - 2 && !so_far.any?{|s| s.to_i < compare_time }
+            make_old = (so_far.length == @test[:args][:iterations] - 2) && !so_far.any?{|s| s.to_i < compare_time }
             make_old ||= Samplers.random(3.1) == 0
             if make_old
+              can_be_blank = false
               new_answer = old_time
               @launch_data[k] = new_answer
             end
           end
           if @test[:args][:allow_blank]
             make_blank = so_far.length == @test[:args][:iterations] - 1 && !so_far.include?("_blank_")
-            make_blank ||= Samplers.random(3) == 0
+            make_blank ||= can_be_blank && Samplers.random(3) == 0
             if make_blank
               new_answer = "_blank_"
               @launch_data[k] = ""
