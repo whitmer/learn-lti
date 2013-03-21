@@ -68,61 +68,92 @@ describe 'Signature Check Activity' do
     fake_launch({'farthest_for_signature_check' => 10})
     get_with_session "/launch/signature_check/0", {}
     post_with_session "/test/signature_check/0", {'launch_url' => 'http://www.example.com/launch'}
+    html = Nokogiri::HTML(last_response.body)
+    html.css("input[name='oauth_nonce']")[0]['value'].should_not == ""
     post_with_session "/validate/signature_check/0", {'valid' => 'Yes'}
-    json = JSON.parse(last_response.body)
-    json['correct'].should == true
-  end
-  
-  it "should fail when marked as valid with the wrong nonce" do
-    Samplers.should_receive(:random).with(3).and_return(1)
-    fake_launch({'farthest_for_signature_check' => 10})
-    get_with_session "/launch/signature_check/0", {}
-    post_with_session "/test/signature_check/0", {'launch_url' => 'http://www.example.com/launch'}
-    post_with_session "/validate/signature_check/0", {'valid' => 'No'}
-    json = JSON.parse(last_response.body)
-    json['correct'].should == false
-  end
-  
-  it "should succeed when marked as invalid with the wrong nonce" do
-    Samplers.should_receive(:random).with(3).and_return(0)
-    fake_launch({'farthest_for_signature_check' => 10})
-    get_with_session "/launch/signature_check/0", {}
-    post_with_session "/test/signature_check/0", {'launch_url' => 'http://www.example.com/launch'}
-    post_with_session "/validate/signature_check/0", {'valid' => 'No'}
     json = JSON.parse(last_response.body)
     json['correct'].should == true
   end
   
   it "should fail when marked as invalid with the correct nonce" do
-    Samplers.should_receive(:random).with(3).and_return(0)
+    Samplers.should_receive(:random).with(3).and_return(1)
     fake_launch({'farthest_for_signature_check' => 10})
     get_with_session "/launch/signature_check/0", {}
     post_with_session "/test/signature_check/0", {'launch_url' => 'http://www.example.com/launch'}
-    post_with_session "/validate/signature_check/0", {'valid' => 'Yes'}
+    html = Nokogiri::HTML(last_response.body)
+    html.css("input[name='oauth_nonce']")[0]['value'].should_not == ""
+    post_with_session "/validate/signature_check/0", {'valid' => 'No'}
     json = JSON.parse(last_response.body)
     json['correct'].should == false
   end
   
-  it "should succeed when marked as valid with an old nonce" do
-    Samplers.should_receive(:random).with(3).and_return(1)
-    Samplers.should_receive(:random).with(3.1).and_return(0)
+  it "should succeed when marked as invalid with a blank nonce" do
+    Samplers.should_receive(:random).with(3).and_return(0)
     fake_launch({'farthest_for_signature_check' => 10})
-    get_with_session "/launch/signature_check/0", {}, 'rack.session' => {'answers_for_signature_check_0' => '12345,12345,12345'}
+    get_with_session "/launch/signature_check/0", {}
     post_with_session "/test/signature_check/0", {'launch_url' => 'http://www.example.com/launch'}
+    html = Nokogiri::HTML(last_response.body)
+    html.css("input[name='oauth_nonce']")[0]['value'].should == ""
     post_with_session "/validate/signature_check/0", {'valid' => 'No'}
     json = JSON.parse(last_response.body)
     json['correct'].should == true
   end
   
-  it "should fail when marked as invalid with an old nonce" do
-    Samplers.should_receive(:random).with(3).and_return(1)
-    Samplers.should_receive(:random).with(3.1).and_return(0)
-    fake_launch({'farthest_for_signature_check' => 1})
-    get_with_session "/launch/signature_check/0", {}, 'rack.session' => {'answers_for_signature_check_0' => '12345,12345,12345'}
+  it "should fail when marked as valid with a blank nonce" do
+    Samplers.should_receive(:random).with(3).and_return(0)
+    fake_launch({'farthest_for_signature_check' => 10})
+    get_with_session "/launch/signature_check/0", {}
     post_with_session "/test/signature_check/0", {'launch_url' => 'http://www.example.com/launch'}
+    html = Nokogiri::HTML(last_response.body)
+    html.css("input[name='oauth_nonce']")[0]['value'].should == ""
     post_with_session "/validate/signature_check/0", {'valid' => 'Yes'}
     json = JSON.parse(last_response.body)
     json['correct'].should == false
+  end
+  
+  it "should succeed when marked as invalid with an old nonce" do
+    Samplers.should_receive(:random).with(3).and_return(1)
+    Samplers.should_receive(:random).with(3.1).and_return(0)
+    fake_launch({'farthest_for_signature_check' => 10})
+    get_with_session "/launch/signature_check/0", {}, 'rack.session' => {'answer_count_for_signature_check_0' => 1, 'answers_for_signature_check_0' => '12345,12345,12345'}
+    post_with_session "/test/signature_check/0", {'launch_url' => 'http://www.example.com/launch'}
+    html = Nokogiri::HTML(last_response.body)
+    html.css("input[name='oauth_nonce']")[0]['value'].should == '12345'
+    post_with_session "/validate/signature_check/0", {'valid' => 'No'}
+    json = JSON.parse(last_response.body)
+    json['correct'].should == true
+  end
+  
+  it "should fail when marked as valid with an old nonce" do
+    Samplers.should_receive(:random).with(3).and_return(1)
+    Samplers.should_receive(:random).with(3.1).and_return(0)
+    fake_launch({'farthest_for_signature_check' => 1})
+    get_with_session "/launch/signature_check/0", {}, 'rack.session' => {'answer_count_for_signature_check_0' => 1, 'answers_for_signature_check_0' => '12345,12345,12345'}
+    post_with_session "/test/signature_check/0", {'launch_url' => 'http://www.example.com/launch'}
+    html = Nokogiri::HTML(last_response.body)
+    html.css("input[name='oauth_nonce']")[0]['value'].should == '12345'
+    post_with_session "/validate/signature_check/0", {'valid' => 'Yes'}
+    json = JSON.parse(last_response.body)
+    json['correct'].should == false
+  end
+  
+  it "should use an old nonce if it hasn't yet after 3 iterations" do
+    Samplers.should_receive(:random).with(3).and_return(1)
+    fake_launch({'farthest_for_signature_check' => 10})
+    get_with_session "/launch/signature_check/0", {}, 'rack.session' => {'answer_count_for_signature_check_0' => 3, 'answers_for_signature_check_0' => '12345,123456,1234567'}
+    post_with_session "/test/signature_check/0", {'launch_url' => 'http://www.example.com/launch'}
+    html = Nokogiri::HTML(last_response.body)
+    html.css("input[name='oauth_nonce']")[0]['value'].should == '12345'
+  end
+  
+  it "should use a blank nonce if it hasn't yet after 4 iterations" do
+    Samplers.should_not_receive(:random).with(3)
+    Samplers.should_receive(:random).with(3.1).and_return(1)
+    fake_launch({'farthest_for_signature_check' => 10})
+    get_with_session "/launch/signature_check/0", {}, 'rack.session' => {'answer_count_for_signature_check_0' => 4, 'answers_for_signature_check_0' => '12345,12345,12345,12345'}
+    post_with_session "/test/signature_check/0", {'launch_url' => 'http://www.example.com/launch'}
+    html = Nokogiri::HTML(last_response.body)
+    html.css("input[name='oauth_nonce']")[0]['value'].should == ''
   end
   
   it "should succeed when marked as valid with correct timestamp" do

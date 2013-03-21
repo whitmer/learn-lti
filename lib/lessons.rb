@@ -5,6 +5,9 @@ module Sinatra
       
       app.get '/launch/:activity/:index' do
         load_user_and_activity
+        if !session["answer_count_for_#{params['activity']}_#{@index}"] || session["answer_count_for_#{params['activity']}_#{@index}"] == 0
+          session["answers_for_#{params['activity']}_#{@index}"] = ""
+        end
         if @activity.category == :api && !@user.settings['access_token']
           oauth_dance
         end
@@ -318,10 +321,11 @@ module Sinatra
           new_answer = v
           if @test[:args][:allow_repeats]
             uniques = so_far - ["_blank_"]
-            make_repeat = so_far.length == @test[:args][:iterations] - 2 && uniques.length == uniques.uniq.length
-            make_repeat ||= uniques.length > 0 && Samplers.random(3.1) == 0
+            make_repeat = (so_far.length == @test[:args][:iterations] - 2) && uniques.length == uniques.uniq.length
+            make_repeat ||= uniques.length > 0 && (Samplers.random(3.1) == 0)
             if make_repeat
               new_answer = uniques[0]
+              @launch_data[k] = new_answer
             end
           end
           if @test[:args][:allow_invalid]
@@ -339,6 +343,7 @@ module Sinatra
             make_old ||= Samplers.random(3.1) == 0
             if make_old
               new_answer = old_time
+              @launch_data[k] = new_answer
             end
           end
           if @test[:args][:allow_blank]
@@ -346,10 +351,11 @@ module Sinatra
             make_blank ||= Samplers.random(3) == 0
             if make_blank
               new_answer = "_blank_"
+              @launch_data[k] = ""
             end
           end
           so_far << (new_answer || "_blank_")
-          session["answers_for_#{params['activity']}_#{@index}"] = (so_far[0 - @test[:args][:iterations], @test[:args][:iterations]] || []).join(",")
+          session["answers_for_#{params['activity']}_#{@index}"] = so_far.reverse[0, @test[:args][:iterations]].reverse.join(",")
           valid = v == new_answer
           session["valid_for_#{params['activity']}_#{@index}"] = valid
         end
