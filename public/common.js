@@ -102,8 +102,28 @@ $(document).ready(function() {
         var html = "<li><a>" + tally + "</a></li>";
         var $li = $(html);
         $li.attr('title', "Learners who have made it to lesson " + idx).css('cursor', 'default');
-        if(tally > 0 && tally > data.total / 2) {
-          $li.find("a").addClass('label label-info');
+        if(tally > 0) {
+          if(tally == data.total) {
+            $li.find("a").addClass('percent_100');
+          } else if(tally > data.total * 0.9) {
+            $li.find("a").addClass('percent_90');
+          } else if(tally > data.total * 0.8) {
+            $li.find("a").addClass('percent_80');
+          } else if(tally > data.total * 0.7) {
+            $li.find("a").addClass('percent_70');
+          } else if(tally > data.total * 0.6) {
+            $li.find("a").addClass('percent_60');
+          } else if(tally > data.total * 0.5) {
+            $li.find("a").addClass('percent_50');
+          } else if(tally > data.total * 0.4) {
+            $li.find("a").addClass('percent_40');
+          } else if(tally > data.total * 0.3) {
+            $li.find("a").addClass('percent_30');
+          } else if(tally > data.total * 0.2) {
+            $li.find("a").addClass('percent_20');
+          } else if(tally > data.total * 0.1) {
+            $li.find("a").addClass('percent_10');
+          }
         }
         $obj.find("ul").prepend($li);
       }

@@ -16,3 +16,44 @@
   font-weight: normal;
   color: #444;
 }
+
+.percent_100 {
+  font-weight: bold;
+  font-color: #fff;
+  background-color: #00243D;
+}
+.percent_90 {
+  font-weight: bold;
+  font-color: #fff;
+  background-color: #003D69;
+}
+.percent_80 {
+  font-weight: bold;
+  font-color: #fff;
+  background-color: #005EA1;
+}
+.percent_70 {
+  font-weight: bold;
+  font-color: #fff;
+  background-color: #0070BF;
+}
+.percent_60 {
+  font-weight: bold;
+  font-color: #fff;
+  background-color: #0081DE;
+}
+.percent_50 {
+  background-color: #57B8FF;
+}
+.percent_40 {
+  background-color: #7AC7FF;
+}
+.percent_30 {
+  background-color: #A6DAFF;
+}
+.percent_20 {
+  background-color: #C4E6FF;
+}
+.percent_10 {
+  background-color: #E0F2FF;
+}
