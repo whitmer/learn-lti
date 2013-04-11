@@ -298,20 +298,19 @@ module Sinatra
           types = nil
           if @test[:args][:lti_return] && @test[:args][:lti_return][:embed_type]
             types = @test[:args][:lti_return][:embed_type]
-            @consumer.set_ext_param('ext_content_return_types', types)
+            @consumer.set_ext_param('content_return_types', types)
             so_far << "return_types"
           elsif use_selection_directive
             types = Samplers.pick_selection_directive
-            @consumer.set_ext_param('selection_directive', types)
+            @consumer.set_non_spec_param('selection_directive', types)
             so_far << "selection_directive"
           else
             types = Samplers.pick_return_types
-            @consumer.set_ext_param('ext_content_return_types', types)
+            @consumer.set_ext_param('content_return_types', types)
             so_far << "return_types"
           end
           @answer = types
           session["answers_for_#{params['activity']}_#{@index}"] = (so_far[0 - @test[:args][:iterations], @test[:args][:iterations]] || []).join(",")
-          puts session["answers_for_#{params['activity']}_#{@index}"]
         end
         @launch_data = @consumer.generate_launch_data
         k, v = @launch_data.each_pair.detect{|k, v| k == param} if @test[:args][:param]
@@ -375,7 +374,7 @@ module Sinatra
           v = return_hash
         end
         
-        @answer = v || ""
+        @answer = v || @answer || ""
         raise "Misconfigured activity: #{params['activity']}/#{@index}" unless @answer
         session["answer_for_#{params['activity']}_#{@index}"] = @answer
         

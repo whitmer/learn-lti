@@ -45,8 +45,16 @@
           <iframe id="app_launch" frameborder="0" style="border: 2px solid #333; width: 100%; height: 300px;" src="about:blank"></iframe>
           <% if @test[:type] == :fill_in %>
             <form method="POST" action="/validate/<%= params['activity'] %>/<%= @index %>" id="answer" class="form-inline" style="display: none;">
-              <% if false && @test[:args][:pick_return_types] %>
-                PICK RETURN TYPES
+              <% if @test[:args][:pick_return_types] %>
+                allowed return types:
+                <ul>
+                  <li><label><input type="checkbox" name="return_type[]" value="image"/> Image</label></li>
+                  <li><label><input type="checkbox" name="return_type[]" value="iframe"/> Iframe</label></li>
+                  <li><label><input type="checkbox" name="return_type[]" value="link"/> Link</label></li>
+                  <li><label><input type="checkbox" name="return_type[]" value="file"/> File</label></li>
+                  <li><label><input type="checkbox" name="return_type[]" value="basic_lti"/> Basic LTI</label></li>
+                  <li><label><input type="checkbox" name="return_type[]" value="oembed"/> OEmbed</label></li>
+                </ul>
               <% elsif @test[:args][:pick_roles] %>
                 roles passed at launch:
                 <ul>

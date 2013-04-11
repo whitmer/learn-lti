@@ -38,7 +38,7 @@ module Sinatra
       end
     end
     
-    module helpers
+    module Helpers
       def consumer
         consumer ||= OAuth::Consumer.new(twitter_config.consumer_key, twitter_config.shared_secret, {
           :site => "http://api.twitter.com",

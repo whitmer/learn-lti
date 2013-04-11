@@ -12,7 +12,7 @@ module Samplers
   end
   
   def self.pick_selection_directive
-    DIRECTIVES.keys.sample(1)
+    DIRECTIVES.keys.sample(1)[0]
   end
   
   def self.map_return_types(str)
