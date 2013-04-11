@@ -1,0 +1,22 @@
+<div style="width: 500px; margin: 0 auto;">
+  <h2><img src="/logo.png" alt=""/> Credentials accepted!</h2>
+  <p>
+  You can use the following credentials to configure this app for
+  use in your course:
+  </p>
+  <dl>
+    <dt>Key:</dt><dd><%= @conf.value %></dd>
+    <dt>Secret:</dt><dd><%= @conf.shared_secret %></dd>
+  </dl>
+  <p>
+    <a href="/config.xml">Copy this XML link</a> and pick "By URL" as 
+    the configuration type to quickly set it up!
+  </p>
+  <p>
+    This is a site that I put together in my free time
+    to help make it easier for people to get up to speed
+    on LTI.
+    Use the site at your own risk. It should work in any
+    LMS that supports LTI.
+  </p>
+</div>

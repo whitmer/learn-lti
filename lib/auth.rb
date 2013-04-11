@@ -1,46 +1,59 @@
+require 'sinatra/base'
+
 module Sinatra
   module Auth
     def self.registered(app)
       app.helpers Auth::Helpers
-    
-      app.get '/oauth_success' do
-        load_user
-        api = Api.new(@api_host, "ignore")
-        json = api.post("/login/oauth2/token", {
-          :client_id => auth_config.consumer_key,
-          :redirect_uri => redirect_uri,
-          :client_secret => auth_config.shared_secret,
-          :code => params['code']
-        })
-        if json['access_token']
-          @user.settings['access_token'] = json['access_token']
-          @user.settings['api_host'] = @api_host
-          @user.save
-          redirect to(session['return_path'])
-        else
-          error("Authorization failed")
-        end
-      end
       
+      app.get "/login" do
+        request_token = consumer.get_request_token(:oauth_callback => "#{request.scheme}://#{request.host_with_port}/login_success")
+        if request_token.token && request_token.secret
+          session[:oauth_token] = request_token.token
+          session[:oauth_token_secret] = request_token.secret
+        else
+          return "Authorization failed"
+        end
+        redirect to("https://api.twitter.com/oauth/authenticate?oauth_token=#{request_token.token}")
+      end
+  
+      app.get "/login_success" do
+        verifier = params[:oauth_verifier]
+        if params[:oauth_token] != session[:oauth_token]
+          return "Authorization failed"
+        end
+        request_token = OAuth::RequestToken.new(consumer,
+          session[:oauth_token],
+          session[:oauth_token_secret]
+        )
+        access_token = request_token.get_access_token(:oauth_verifier => verifier)
+        screen_name = access_token.params['screen_name']
+    
+        if !screen_name
+          return "Authorization failed"
+        end
+    
+        @conf = LtiConfig.first(:consumer_key => screen_name)
+        @conf ||= LtiConfig.generate("Twitter for @#{screen_name}", screen_name)
+        erb :config_tokens
+      end
     end
     
-    module Helpers
-      def oauth_dance
-        halt(400, "Missing authorization data") unless auth_config
-        session['return_path'] = request.path
-        url = @api_host + "/login/oauth2/auth?request_type=code&client_id=#{auth_config.consumer_key}&redirect_uri=#{CGI.escape(redirect_uri)}" 
-        redirect to(url)
+    module helpers
+      def consumer
+        consumer ||= OAuth::Consumer.new(twitter_config.consumer_key, twitter_config.shared_secret, {
+          :site => "http://api.twitter.com",
+          :request_token_path => "/oauth/request_token",
+          :access_token_path => "/oauth/access_token",
+          :authorize_path=> "/oauth/authorize",
+          :signature_method => "HMAC-SHA1"
+        })
       end
-      
-      def redirect_uri
-        host + "/oauth_success"
+    
+      def twitter_config
+        @@twitter_config ||= LtiConfig.first(:app_name => 'twitter_for_login')
       end
-      
-      def auth_config
-        @auth_config ||= LtiConfig.first(:app_name => "Canvas Auth")
-      end
-    end    
+    end
   end
-  
+
   register Auth
 end
