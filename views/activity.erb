@@ -45,7 +45,9 @@
           <iframe id="app_launch" frameborder="0" style="border: 2px solid #333; width: 100%; height: 300px;" src="about:blank"></iframe>
           <% if @test[:type] == :fill_in %>
             <form method="POST" action="/validate/<%= params['activity'] %>/<%= @index %>" id="answer" class="form-inline" style="display: none;">
-              <% if @test[:args][:pick_roles] %>
+              <% if false && @test[:args][:pick_return_types] %>
+                PICK RETURN TYPES
+              <% elsif @test[:args][:pick_roles] %>
                 roles passed at launch:
                 <ul>
                   <li><label><input type="checkbox" name="role[]" value="Teacher"/> Teacher</label></li>
@@ -93,6 +95,7 @@
         </form>
       <% elsif @test[:type] == :file %>
         Access Token: <span id='token'><%= @user.settings['fake_token'] %></span><br/>
+        Preflight URL: <span id='preflight_url'><%= host %>/api/v1/preflight/<%= params['activity'] %>/<%= @index %>/<%= @user.id %>/<%= @user.settings['verification'] %></span><br/>
         <form method="POST" rel="/setup/<%= params['activity'] %>/<%= @index %>" action="/validate/<%= params['activity'] %>/<%= @index %>" id="answer" class="form-inline" style="display: none;">
           <label>
             put your answer here:<br/>

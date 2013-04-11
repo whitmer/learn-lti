@@ -11,7 +11,7 @@ describe 'File Upload Tests' do
   it "should succeed on preflight for step 1" do
     fake_launch({'farthest_for_file_uploads' => 10})
     get_with_session "/launch/file_uploads/0", {}
-    post_with_session "/preflight/file_uploads/0/#{@user.id}/#{@user.settings['verification']}", {'name' => 'this_whole_place_is_slithering.txt', 'size' => 1, 'content_type' => 'text/plain', 'access_token' => @user.settings['fake_token']}
+    post_with_session "/api/v1/preflight/file_uploads/0/#{@user.id}/#{@user.settings['verification']}", {'name' => 'this_whole_place_is_slithering.txt', 'size' => 1, 'content_type' => 'text/plain', 'access_token' => @user.settings['fake_token']}
     json = JSON.parse(last_response.body)
     answer = json['upload_url']
     post_with_session "/validate/file_uploads/0", {'answer' => answer}
@@ -23,7 +23,7 @@ describe 'File Upload Tests' do
   it "should handle valid uploads" do
     fake_launch({'farthest_for_file_uploads' => 10})
     get_with_session "/launch/file_uploads/0", {}
-    post_with_session "/preflight/file_uploads/0/#{@user.id}/#{@user.settings['verification']}", {'name' => 'this_whole_place_is_slithering.txt', 'size' => 1, 'content_type' => 'text/plain', 'access_token' => @user.settings['fake_token']}
+    post_with_session "/api/v1/preflight/file_uploads/0/#{@user.id}/#{@user.settings['verification']}", {'name' => 'this_whole_place_is_slithering.txt', 'size' => 1, 'content_type' => 'text/plain', 'access_token' => @user.settings['fake_token']}
     json = JSON.parse(last_response.body)
     url = json['upload_url'].sub(/http:\/\/example.org/, '')
     hash = @user.reload.settings['settings_for_file_upload']
@@ -41,7 +41,7 @@ describe 'File Upload Tests' do
   it "should error on invalid uploads" do
     fake_launch({'farthest_for_file_uploads' => 10})
     get_with_session "/launch/file_uploads/0", {}
-    post_with_session "/preflight/file_uploads/0/#{@user.id}/#{@user.settings['verification']}", {'name' => 'this_whole_place_is_slithering.txt', 'size' => 1, 'content_type' => 'text/plain', 'access_token' => @user.settings['fake_token']}
+    post_with_session "/api/v1/preflight/file_uploads/0/#{@user.id}/#{@user.settings['verification']}", {'name' => 'this_whole_place_is_slithering.txt', 'size' => 1, 'content_type' => 'text/plain', 'access_token' => @user.settings['fake_token']}
     json = JSON.parse(last_response.body)
     url = json['upload_url'].sub(/http:\/\/example.org/, '')
     hash = @user.reload.settings['settings_for_file_upload']
@@ -53,7 +53,7 @@ describe 'File Upload Tests' do
 
     fake_launch({'farthest_for_file_uploads' => 10})
     get_with_session "/launch/file_uploads/0", {}
-    post_with_session "/preflight/file_uploads/0/#{@user.id}/#{@user.settings['verification']}", {'name' => 'this_whole_place_is_slithering.txt', 'size' => 1, 'content_type' => 'text/plain', 'access_token' => @user.settings['fake_token']}
+    post_with_session "/api/v1/preflight/file_uploads/0/#{@user.id}/#{@user.settings['verification']}", {'name' => 'this_whole_place_is_slithering.txt', 'size' => 1, 'content_type' => 'text/plain', 'access_token' => @user.settings['fake_token']}
     json = JSON.parse(last_response.body)
     url = json['upload_url'].sub(/http:\/\/example.org/, '')
     hash = @user.reload.settings['settings_for_file_upload']
@@ -64,7 +64,7 @@ describe 'File Upload Tests' do
     json['message'].should == "File was sent as a string, not a file. Make sure enctype='multipart/form-data' on the form element."
     fake_launch({'farthest_for_file_uploads' => 10})
     get_with_session "/launch/file_uploads/0", {}
-    post_with_session "/preflight/file_uploads/0/#{@user.id}/#{@user.settings['verification']}", {'name' => 'this_whole_place_is_slithering.txt', 'size' => 1, 'content_type' => 'text/plain', 'access_token' => @user.settings['fake_token']}
+    post_with_session "/api/v1/preflight/file_uploads/0/#{@user.id}/#{@user.settings['verification']}", {'name' => 'this_whole_place_is_slithering.txt', 'size' => 1, 'content_type' => 'text/plain', 'access_token' => @user.settings['fake_token']}
     json = JSON.parse(last_response.body)
     url = json['upload_url'].sub(/http:\/\/example.org/, '')
     hash = @user.reload.settings['settings_for_file_upload']
@@ -78,7 +78,7 @@ describe 'File Upload Tests' do
   it "should error on upload params in wrong order" do
     fake_launch({'farthest_for_file_uploads' => 10})
     get_with_session "/launch/file_uploads/0", {}
-    post_with_session "/preflight/file_uploads/0/#{@user.id}/#{@user.settings['verification']}", {'name' => 'this_whole_place_is_slithering.txt', 'size' => 1, 'content_type' => 'text/plain', 'access_token' => @user.settings['fake_token']}
+    post_with_session "/api/v1/preflight/file_uploads/0/#{@user.id}/#{@user.settings['verification']}", {'name' => 'this_whole_place_is_slithering.txt', 'size' => 1, 'content_type' => 'text/plain', 'access_token' => @user.settings['fake_token']}
     json = JSON.parse(last_response.body)
     url = json['upload_url'].sub(/http:\/\/example.org/, '')
     hash = {'file' => {:filename => "this_whole_place_is_slithering.txts", :tempfile => ""}}
@@ -93,7 +93,7 @@ describe 'File Upload Tests' do
   it "should error on extra upload params" do
     fake_launch({'farthest_for_file_uploads' => 10})
     get_with_session "/launch/file_uploads/0", {}
-    post_with_session "/preflight/file_uploads/0/#{@user.id}/#{@user.settings['verification']}", {'name' => 'this_whole_place_is_slithering.txt', 'size' => 1, 'content_type' => 'text/plain', 'access_token' => @user.settings['fake_token']}
+    post_with_session "/api/v1/preflight/file_uploads/0/#{@user.id}/#{@user.settings['verification']}", {'name' => 'this_whole_place_is_slithering.txt', 'size' => 1, 'content_type' => 'text/plain', 'access_token' => @user.settings['fake_token']}
     json = JSON.parse(last_response.body)
     url = json['upload_url'].sub(/http:\/\/example.org/, '')
     hash = @user.reload.settings['settings_for_file_upload']
@@ -108,7 +108,7 @@ describe 'File Upload Tests' do
   it "should error when missing upload params" do
     fake_launch({'farthest_for_file_uploads' => 10})
     get_with_session "/launch/file_uploads/0", {}
-    post_with_session "/preflight/file_uploads/0/#{@user.id}/#{@user.settings['verification']}", {'name' => 'this_whole_place_is_slithering.txt', 'size' => 1, 'content_type' => 'text/plain', 'access_token' => @user.settings['fake_token']}
+    post_with_session "/api/v1/preflight/file_uploads/0/#{@user.id}/#{@user.settings['verification']}", {'name' => 'this_whole_place_is_slithering.txt', 'size' => 1, 'content_type' => 'text/plain', 'access_token' => @user.settings['fake_token']}
     json = JSON.parse(last_response.body)
     url = json['upload_url'].sub(/http:\/\/example.org/, '')
     hash = @user.reload.settings['settings_for_file_upload']
@@ -123,7 +123,7 @@ describe 'File Upload Tests' do
   it "should succeed on valid confirmation" do
     fake_launch({'farthest_for_file_uploads' => 10})
     get_with_session "/launch/file_uploads/0", {}
-    post_with_session "/preflight/file_uploads/0/#{@user.id}/#{@user.settings['verification']}", {'name' => 'this_whole_place_is_slithering.txt', 'size' => 1, 'content_type' => 'text/plain', 'access_token' => @user.settings['fake_token']}
+    post_with_session "/api/v1/preflight/file_uploads/0/#{@user.id}/#{@user.settings['verification']}", {'name' => 'this_whole_place_is_slithering.txt', 'size' => 1, 'content_type' => 'text/plain', 'access_token' => @user.settings['fake_token']}
     json = JSON.parse(last_response.body)
     url = json['upload_url'].sub(/http:\/\/example.org/, '')
     hash = @user.reload.settings['settings_for_file_upload']
@@ -141,7 +141,7 @@ describe 'File Upload Tests' do
   it "should error on invalid confirmation" do
     fake_launch({'farthest_for_file_uploads' => 10})
     get_with_session "/launch/file_uploads/2", {}
-    post_with_session "/preflight/file_uploads/0/#{@user.id}/#{@user.settings['verification']}", {'name' => 'this_whole_place_is_slithering.txt', 'size' => 1, 'content_type' => 'text/plain', 'access_token' => @user.settings['fake_token']}
+    post_with_session "/api/v1/preflight/file_uploads/0/#{@user.id}/#{@user.settings['verification']}", {'name' => 'this_whole_place_is_slithering.txt', 'size' => 1, 'content_type' => 'text/plain', 'access_token' => @user.settings['fake_token']}
     json = JSON.parse(last_response.body)
     url = json['upload_url'].sub(/http:\/\/example.org/, '')
     hash = @user.reload.settings['settings_for_file_upload']
@@ -158,7 +158,7 @@ describe 'File Upload Tests' do
   it "should succeed when correct id is entered after valid confirmation" do
     fake_launch({'farthest_for_file_uploads' => 10})
     get_with_session "/launch/file_uploads/2", {}
-    post_with_session "/preflight/file_uploads/0/#{@user.id}/#{@user.settings['verification']}", {'name' => 'this_whole_place_is_slithering.txt', 'size' => 1, 'content_type' => 'text/plain', 'access_token' => @user.settings['fake_token']}
+    post_with_session "/api/v1/preflight/file_uploads/0/#{@user.id}/#{@user.settings['verification']}", {'name' => 'this_whole_place_is_slithering.txt', 'size' => 1, 'content_type' => 'text/plain', 'access_token' => @user.settings['fake_token']}
     json = JSON.parse(last_response.body)
     url = json['upload_url'].sub(/http:\/\/example.org/, '')
     hash = @user.reload.settings['settings_for_file_upload']
@@ -187,7 +187,7 @@ describe 'File Upload Tests' do
     Samplers.should_receive(:random).with(2).and_return(1)
     Samplers.should_receive(:random).with(3).and_return(2)
     Samplers.should_receive(:random).with(5).and_return(2)
-    post_with_session "/preflight/file_uploads/3/#{@user.id}/#{@user.settings['verification']}", {'url' => 'http://www.example.com/files/monkey.brains', 'name' => 'monkey.brains', 'size' => 12345, 'content_type' => 'application/chilled-dessert', 'access_token' => @user.settings['fake_token']}
+    post_with_session "/api/v1/preflight/file_uploads/3/#{@user.id}/#{@user.settings['verification']}", {'url' => 'http://www.example.com/files/monkey.brains', 'name' => 'monkey.brains', 'size' => 12345, 'content_type' => 'application/chilled-dessert', 'access_token' => @user.settings['fake_token']}
     last_session = session
     @user.reload.settings['settings_for_file_upload']['error'].should_not be_nil
     @user.settings['settings_for_file_upload']['id'].should_not be_nil
@@ -224,7 +224,7 @@ describe 'File Upload Tests' do
     Samplers.should_receive(:random).with(2).and_return(0)
     Samplers.should_receive(:random).with(3).and_return(0)
     Samplers.should_receive(:random).with(5).and_return(2)
-    post_with_session "/preflight/file_uploads/3/#{@user.id}/#{@user.settings['verification']}", {'url' => 'http://www.example.com/files/monkey.brains', 'name' => 'monkey.brains', 'size' => 12345, 'content_type' => 'application/chilled-dessert', 'access_token' => @user.settings['fake_token']}
+    post_with_session "/api/v1/preflight/file_uploads/3/#{@user.id}/#{@user.settings['verification']}", {'url' => 'http://www.example.com/files/monkey.brains', 'name' => 'monkey.brains', 'size' => 12345, 'content_type' => 'application/chilled-dessert', 'access_token' => @user.settings['fake_token']}
     last_session = session
     @user.reload.settings['settings_for_file_upload']['error'].should_not be_nil
     @user.settings['settings_for_file_upload']['id'].should_not be_nil

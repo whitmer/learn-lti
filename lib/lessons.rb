@@ -127,7 +127,7 @@ module Sinatra
       end
       
       # File Upload Endpoints
-      app.post '/preflight/:activity/:index/:user_id/:code' do
+      app.post '/api/v1/preflight/:activity/:index/:user_id/:code' do
         load_user_and_activity
         if @test[:args][:phase] == :step_url
           if params['name'] != 'monkey.brains'
@@ -295,21 +295,26 @@ module Sinatra
           so_far = session["answers_for_#{params['activity']}_#{@index}"].split(/,/)
           use_selection_directive = so_far.length == (@test[:args][:iterations] + 1) && !so_far.include?("selection_directive")
           use_selection_directive ||= Samplers.random(3) == 0
+          types = nil
           if @test[:args][:lti_return] && @test[:args][:lti_return][:embed_type]
             types = @test[:args][:lti_return][:embed_type]
-            @consumer.set_ext_variable('ext_content_return_types', types)
+            @consumer.set_ext_param('ext_content_return_types', types)
             so_far << "return_types"
           elsif use_selection_directive
-            @consumer.set_ext_param('selection_directive', Samplers.pick_selection_directive)
+            types = Samplers.pick_selection_directive
+            @consumer.set_ext_param('selection_directive', types)
             so_far << "selection_directive"
           else
-            @consumer.set_ext_param('ext_content_return_types', Samplers.pick_return_types)
+            types = Samplers.pick_return_types
+            @consumer.set_ext_param('ext_content_return_types', types)
             so_far << "return_types"
           end
+          @answer = types
           session["answers_for_#{params['activity']}_#{@index}"] = (so_far[0 - @test[:args][:iterations], @test[:args][:iterations]] || []).join(",")
+          puts session["answers_for_#{params['activity']}_#{@index}"]
         end
         @launch_data = @consumer.generate_launch_data
-        k, v = @launch_data.each_pair.detect{|k, v| k == param}
+        k, v = @launch_data.each_pair.detect{|k, v| k == param} if @test[:args][:param]
         session['last_sig'] = @launch_data['oauth_signature']
       
         if @test[:args][:assignment] && @test[:args][:score]

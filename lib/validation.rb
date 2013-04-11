@@ -136,6 +136,7 @@ module Sinatra
         elsif @test[:args] && @test[:args][:pick_return_types]
           return_types = (params['return_type'] || []).sort.join(',')
           mapped_return_types = Samplers.map_return_types(session["answer_for_#{params['activity']}_#{@index}"])
+          puts mapped_return_types.to_json
           res[:answer] = mapped_return_types
           correct = (return_types == mapped_return_types)
         elsif @test[:args] && @test[:args][:pick_valid]
