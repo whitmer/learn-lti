@@ -46,6 +46,7 @@ module Sinatra
           session["key"] = Samplers.random_string(true)
           session["secret"] = Samplers.random_string(true)
           session['name'] = params['lis_person_name_full']
+          session['is_canvas'] = params['tool_consumer_info_product_family_code'] == 'canvas'
           # check if they're a teacher or not
           # session["permission_for_#{params['custom_canvas_course_id']}"] = 'edit' if provider.roles.include?('instructor') || provider.roles.include?('contentdeveloper') || provider.roles.include?('urn:lti:instrole:ims/lis/administrator') || provider.roles.include?('administrator')
           

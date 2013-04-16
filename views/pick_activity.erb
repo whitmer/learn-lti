@@ -8,7 +8,8 @@
 <% else %>
   <p>Which activity would you like to embed here?</p>
 <% end %>
-<% [:lti, :api].each do |key| %>
+<% list = session['is_canvas'] ? [:lti, :api] : [:lti] %>
+<% list.each do |key| %>
   <h3><%= key.to_s.upcase %> Activities</h3>
   <ul class="nav nav-pills nav-stacked" id="activities">
   <% Activity.all(key).each do |activity| %>
