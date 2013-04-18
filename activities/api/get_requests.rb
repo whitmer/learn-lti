@@ -35,7 +35,7 @@ get = Activity.add(:get_requests, :api)
     <p>Even if you're not curious, we're now going to use your browser's debugger
     to make our first API call to the actual Canvas API. Open up the JavaScript
     console in your browser and enter the following code:
-    <code>$.getJSON("/api/v1/users/self/profile", function(data) { console.log(data); })</code>.
+    <code>$.getJSON("/api/v1/users/self/profile").done(function(data) { console.log(data); })</code>.
     After a second you'll see a data structure returned in your console. Browse through
     it and enter the value for the <code>id</code> attribute.</p>
   EOF
@@ -46,7 +46,7 @@ get = Activity.add(:get_requests, :api)
     the mean time, let's go through the error messages, how to run into each one
     and what each one means.</p>
     <p>First, <code>404 Not Found</code>. Run the following code in your
-    browser's debugger: <code>$.getJSON("/api/v1/users/self/profilex", function(data) { console.log(data); })</code>.
+    browser's debugger: <code>$.getJSON("/api/v1/users/self/profilex").fail(function(xhr) { console.log(JSON.parse(xhr.responseText)); })</code>.
     You should see a response show up in your console with a <code>status</code> value
     of <code>not_found</code> and a <code>message</code> of <code>An error occurred.</code>.
     This error typically happens when you have an invalid endpoint. In this case, the endpoint
@@ -58,7 +58,7 @@ get = Activity.add(:get_requests, :api)
     this is the database id you should look up in the error_reports table. If you're in
     the cloud, you can share this with an Instructure employee for more detailed help.</p>
     <p>Next, let's look at <code>401 Authorization Required</code>. Run the following
-    code: <code>$.getJSON("/api/v1/users/230519/profile", function(data) { console.log(data); })</code>.
+    code: <code>$.getJSON("/api/v1/users/230519/profile").fail(function(xhr) { console.log(JSON.parse(xhr.responseText)); })</code>.
     The response status should be 401 (Unauthorized) unless you're somehow associated 
     with this user. The <code>status</code> attribute should be <code>unauthorized</code>, 
     and the <code>message</code> should be <code>You are not authorized to perform that action.</code>
@@ -66,13 +66,13 @@ get = Activity.add(:get_requests, :api)
     If this happens you should make sure you're using the right access token and that the
     user actually has correct permissions.</p>
     <p>Ok, next comes another <code>404 Not Found</code>. Run this code:
-    <code>$.getJSON("/api/v1/users/0/profile", function(data) { console.log(data); })</code>.
+    <code>$.getJSON("/api/v1/users/0/profile").fail(function(xhr) { console.log(JSON.parse(xhr.responseText)); })</code>.
     You should get a 404 again this time with a <code>status</code> of <code>not_found</code>
     and a <code>message</code> of <code>The specified resource does not exist.</code> This
     happens typically when you have a bad id (in this case, there is no user with the id of 0).
     <p>
     <p>Last, another <code>401 Not Authorized</code>. Run this code:
-    <code>$.getJSON("/api/v1/users/self/profile?access_token=asdf", function(data) { console.log(data); })</code>.
+    <code>$.getJSON("/api/v1/users/self/profile?access_token=asdf").fail(function(xhr) { console.log(JSON.parse(xhr.responseText)); })</code>.
     You'll get a 401 again with a <code>status</code> of <code>unauthorized</code>
     and a <code>message</code> of <code>Invalid access token.</code>. This happens when
     you have an invalid or expired access token.</p>
@@ -85,7 +85,7 @@ get = Activity.add(:get_requests, :api)
     have a bad parameter or be missing a required parameter, but it also just might be
     a temporary problem with the API service.</p>
     <p>For this test, run the following code:
-    <code>$.getJSON("/api/v1/courses/123/external_feeds", function(data) { console.log(data); })</code> 
+    <code>$.getJSON("/api/v1/courses/123/external_feeds").fail(function(xhr) { console.log(JSON.parse(xhr.responseText)); })</code> 
     and tell me the value of the <code>message</code> attribute.</p>
   EOF
   
