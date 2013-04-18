@@ -1,13 +1,30 @@
-<h2>Activity Stats</h2>
-<% [:lti, :api].each do |key| %>
-  <h3><%= key.to_s.upcase %> Stats</h3>
-  <% Activity.all(key).each do |activity| %>
-    <div class='activity' rel='/api/v1/stats/<%= activity.id %>' style="margin-left: 10px;">
-      <%= activity.id %>
-      <div class="pagination" style="margin-top: -3px; margin-bottom: 10px;">
-        <ul>
-        </ul>
-      </div>
-    </div>
-  <% end %>
-<% end %>
+<div class='row'>
+  <span class='span4'>
+    <h2>Usage Stats</h2>
+    <table class='table table-bordered table-striped'>
+      <tr>
+        <td>Configurations</td>
+        <td><%= LtiConfig.count %></td>
+      </tr>
+      <tr>
+        <td>Users Launched</td>
+        <td><%= User.count %></td>
+      </tr>
+    </table>
+  </span>
+  <span class='span8'>
+    <h2>Activity Stats</h2>
+    <% [:lti, :api].each do |key| %>
+      <h3><%= key.to_s.upcase %> Stats</h3>
+      <% Activity.all(key).each do |activity| %>
+        <div class='activity' rel='/api/v1/stats/<%= activity.id %>' style="margin-left: 10px;">
+          <%= activity.id %>
+          <div class="pagination" style="margin-top: -3px; margin-bottom: 10px;">
+            <ul>
+            </ul>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </span>
+</div>
