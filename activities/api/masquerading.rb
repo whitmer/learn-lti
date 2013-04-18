@@ -39,7 +39,7 @@ masquerading = Activity.add(:masquerading_and_ids, :api)
     <code>sis_course_id:&lt;sis_id&gt;</code>. So to get page views for a user
     whose SIS ID was <code>ABC123</code> you would request the endpoint
     <code>/api/v1/users/sis_user_id:ABC123/page_views</code>.</p>
-    <p>For this test, I want you to tell me end endpoint you'd to get
+    <p>For this test, I want you to tell me end endpoint you'd hit to get
     the profile information for a user with the SIS ID of 
     <code class='setup_result'>...</code>. Start with the first slash,
     don't include the host and protocol (i.e. <code>/api/v1/courses</code>).</p>
