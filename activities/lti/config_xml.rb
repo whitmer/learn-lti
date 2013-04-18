@@ -51,7 +51,7 @@ config_xml = Activity.add(:config_xml, :lti)
     <p>For this test, let's have you send over 
     <code>custom_password</code> as <code>sherbert lemon</code> and
     <code>custom_house_elf</code> as <code>dobby</code>.
-    <code>http://www.example.com/icon.png</code>. Again, don't feel bad
+    Again, don't feel bad
     about using 
     <a href="https://lti-examples.heroku.com/build_xml.html">our XML
     builder</a> </p>
@@ -69,7 +69,7 @@ config_xml = Activity.add(:config_xml, :lti)
     unique since there's no enforcing body for preventing
     collisions. Just be a good citizen, for goodness' sake.</p>
     <p>Send over a tool ID of <code>i_am_the_last_one</code>
-    <code>http://www.example.com/icon.png</code>. Again, don't feel bad
+    Again, don't feel bad
     about using 
     <a href="https://lti-examples.heroku.com/build_xml.html">our XML
     builder</a> </p>

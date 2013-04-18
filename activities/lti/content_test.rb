@@ -52,7 +52,7 @@ content_test = Activity.add(:content_test, :lti)
   args = {
     :embed_type => 'link',
     :url => 'http://www.bacon.com',
-    :title => 'bacon'
+    :text => 'bacon'
   }
   content_test.add_redirect_test :link, :lti_return => args, :explanation => <<-EOF
     <p>Awright, now let's get to the good stuff. We've built an
@@ -90,7 +90,7 @@ content_test = Activity.add(:content_test, :lti)
     the image is purely for decoration (alt tags are important for
     accessibility, if you didn't know).</p>
     <dl>
-      #{args.each_pair{|k, v| "<dt><code>#{k}</code></dt><dd><code>#{v}</code></dd>\n"}}
+      #{args.map{|k, v| "<dt><code>" + k.to_s + "</code></dt><dd><code>" + v + "</code></dd>\n"}.join("")}
     </dl>
   EOF
   args = {
@@ -105,7 +105,7 @@ content_test = Activity.add(:content_test, :lti)
     and height parameters are recommendations more than
     requirements. Here's all the parameters you should send across:</p>
     <dl>
-      #{args.each_pair{|k, v| "<dt><code>#{k}</code></dt><dd><code>#{v}</code></dd>\n"}}
+      #{args.map{|k, v| "<dt><code>" + k.to_s + "</code></dt><dd><code>" + v + "</code></dd>\n"}.join("")}
     </dl>
   EOF
   args = {
@@ -120,7 +120,7 @@ content_test = Activity.add(:content_test, :lti)
     <code>content_type</code> is a required parameter.
     Parameters below:</p>
     <dl>
-      #{args.each_pair{|k, v| "<dt><code>#{k}</code></dt><dd><code>#{v}</code></dd>\n"}}
+      #{args.map{|k, v| "<dt><code>" + k.to_s + "</code></dt><dd><code>" + v + "</code></dd>\n"}.join("")}
     </dl>
     <p>You should also know there's a possible additional parameter
     you'll receive, <code>ext_content_file_extensions</code>, which 
@@ -153,7 +153,7 @@ content_test = Activity.add(:content_test, :lti)
     with the same consumer key and secret that were used in the initial
     launch.</p>
     <dl>
-      #{args.each_pair{|k, v| "<dt><code>#{k}</code></dt><dd><code>#{v}</code></dd>\n"}}
+      #{args.map{|k, v| "<dt><code>" + k.to_s + "</code></dt><dd><code>" + v + "</code></dd>\n"}.join("")}
     </dl>
   EOF
   # give them a helper in case they don't have oembed set up (since this
@@ -172,6 +172,6 @@ content_test = Activity.add(:content_test, :lti)
     to get crazy, this is how.</p>
     <p>Return parameters listed below:</p>
     <dl>
-      #{args.each_pair{|k, v| "<dt><code>#{k}</code></dt><dd><code>#{v}</code></dd>\n"}}
+      #{args.map{|k, v| "<dt><code>" + k.to_s + "</code></dt><dd><code>" + v + "</code></dd>\n"}.join("")}
     </dl>
   EOF

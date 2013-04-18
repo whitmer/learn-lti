@@ -10,6 +10,7 @@ module Sinatra
         correct = (answer && user_answer == answer)
         res = {}
         res[:answer] = session["answer_for_#{params['activity']}_#{@index}"]
+        res[:explanation] = "Incorrect parameters"
         res[:correct] = correct
         res[:error] = "Session lost" unless answer
         @res = handle_result(res)
@@ -140,6 +141,7 @@ module Sinatra
           correct = (return_types == mapped_return_types)
         elsif @test[:args] && @test[:args][:pick_valid]
           valid = session["valid_for_#{params['activity']}_#{@index}"]
+          puts valid.to_json
           res[:valid] = valid
           correct = valid ? (params['valid'] == "Yes") : (params['valid'] == "No")
         end

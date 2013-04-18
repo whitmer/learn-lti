@@ -2,6 +2,7 @@ var confirmResult;
 $(document).ready(function() {
   $("#launch").submit(function() {
     $("#answer").show();
+    $("#answer .waiting").show();
     $("#answer .hideable").show();
     $("#results").hide();
     $("#answer input").each(function() {

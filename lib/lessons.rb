@@ -280,9 +280,9 @@ module Sinatra
         session['launch_url'] = params['launch_url']
       
         tc = tool_config
-        rand_id = rand(1000).to_s
+        rand_id = rand(10000).to_s
         @consumer = tool_consumer(tc, rand_id)
-        if @test[:args][:assignment] || @test[:args][:all_params]
+        if @test[:args][:assignment] || @test[:args][:all_params] || @test[:args][:param] == :lis_outcome_service_url
           sourced_id = Samplers.random_string
           @launch = Launch.generate(session['key'], session['secret'], sourced_id, @test[:args][:score], @test[:args][:submission_text], @test[:args][:submission_url])
           @consumer.lis_outcome_service_url = host + '/grade_passback/' + @launch.id.to_s
@@ -310,6 +310,7 @@ module Sinatra
             so_far << "return_types"
           end
           @answer = types
+          so_far = ([""] * @test[:args][:iterations]) + so_far
           session["answers_for_#{params['activity']}_#{@index}"] = (so_far[0 - @test[:args][:iterations], @test[:args][:iterations]] || []).join(",")
         end
         @launch_data = @consumer.generate_launch_data
@@ -366,6 +367,8 @@ module Sinatra
           so_far << (new_answer || "_blank_")
           session["answers_for_#{params['activity']}_#{@index}"] = so_far.reverse[0, @test[:args][:iterations]].reverse.join(",")
           valid = v == new_answer
+          v = new_answer
+          puts "valid: #{valid}" if TestLti.environment == :development
           session["valid_for_#{params['activity']}_#{@index}"] = valid
         end
       
@@ -375,6 +378,7 @@ module Sinatra
         end
         
         @answer = v || @answer || ""
+        puts @answer if TestLti.environment == :development
         raise "Misconfigured activity: #{params['activity']}/#{@index}" unless @answer
         session["answer_for_#{params['activity']}_#{@index}"] = @answer
         

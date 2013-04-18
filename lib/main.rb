@@ -72,6 +72,7 @@ module Sinatra
         (test[:args][:lti_return] || {}).keys.each do |arg|
           hash[arg] = args[arg] || args[arg.to_s]
         end
+        puts hash.to_json
         Digest::MD5.hexdigest(hash.to_json)[0, 10]
       end
       
