@@ -75,7 +75,7 @@ module Sinatra
         halt 500, error("User session lost") unless session['user_id'] && session['activity'] && session['activity_index'] && session['api_host']
         return_url = "#{protocol}://#{request.host_with_port}/canvas_oauth"
         code = params['code']
-        url = "#{protocol}://#{session['api_host']}/login/oauth2/token"
+        url = "#{session['api_host']}/login/oauth2/token"
         uri = URI.parse(url)
         
         http = Net::HTTP.new(uri.host, uri.port)
@@ -122,7 +122,7 @@ module Sinatra
         session['activity'] = params['activity']
         session['activity_index'] = params['index']
         return_url = "#{protocol}://#{request.host_with_port}/oauth_success"
-        redirect to("#{protocol}://#{session['api_host']}/login/oauth2/auth?client_id=#{oauth_config.consumer_key}&response_type=code&redirect_uri=#{CGI.escape(return_url)}")
+        redirect to("#{session['api_host']}/login/oauth2/auth?client_id=#{oauth_config.consumer_key}&response_type=code&redirect_uri=#{CGI.escape(return_url)}")
       end
     end
   end
