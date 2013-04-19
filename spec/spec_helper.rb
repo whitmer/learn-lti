@@ -13,8 +13,8 @@ def lti_config
   @config = LtiConfig.generate("Test App")
 end
 
-def auth_config
-  @config = LtiConfig.generate("Canvas Auth")
+def canvas_config
+  @canvas_config = LtiConfig.generate("canvas_oauth")
 end
 
 def assert_error_page(msg)

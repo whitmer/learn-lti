@@ -36,6 +36,7 @@ module Sinatra
         @conf ||= LtiConfig.generate("Twitter for @#{screen_name}", screen_name)
         erb :config_tokens
       end
+      
     end
     
     module Helpers
