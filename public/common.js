@@ -93,7 +93,6 @@ $(document).ready(function() {
     });
   });
   
-  
   $(".activity").each(function() {
     var $obj = $(this);
     $.getJSON($(this).attr('rel'), function(data) {
@@ -130,6 +129,7 @@ $(document).ready(function() {
         }
         $obj.find("ul").prepend($li);
       }
+      $(".activity li").tooltip();
     });
   });
 });
