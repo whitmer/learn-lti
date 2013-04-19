@@ -17,7 +17,8 @@ module Sinatra
           counts[n] ||= 0
           counts[n] += 1
         end
-        {:counts => counts, :max => @activity.tests.length, :total => progresses.length}.to_json
+        names = @activity.tests.map{|t| t[:args][:key] }
+        {:counts => counts, :max => @activity.tests.length, :total => progresses.length, :names => names}.to_json
       end
     end
     

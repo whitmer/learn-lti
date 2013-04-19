@@ -93,6 +93,7 @@ $(document).ready(function() {
     });
   });
   
+  
   $(".activity").each(function() {
     var $obj = $(this);
     $.getJSON($(this).attr('rel'), function(data) {
@@ -102,7 +103,8 @@ $(document).ready(function() {
         tally = tally + count;
         var html = "<li><a>" + tally + "</a></li>";
         var $li = $(html);
-        $li.attr('title', "Learners who have made it to lesson " + idx).css('cursor', 'default');
+        var name = "Lesson " + idx + ": " + (data.names[idx] || "No Name");
+        $li.attr('title', "Learners who have made it to " + name).css('cursor', 'default');
         if(tally > 0) {
           if(tally == data.total) {
             $li.find("a").addClass('percent_100');
