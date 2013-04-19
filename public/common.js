@@ -103,7 +103,7 @@ $(document).ready(function() {
         var html = "<li><a>" + tally + "</a></li>";
         var $li = $(html);
         var name = "Lesson " + idx + ": " + (data.names[idx] || "No Name");
-        $li.attr('title', "Learners who have made it to " + name).css('cursor', 'default');
+        $li.attr('title', "Learners who completed " + name).css('cursor', 'default');
         if(tally > 0) {
           if(tally == data.total) {
             $li.find("a").addClass('percent_100');
