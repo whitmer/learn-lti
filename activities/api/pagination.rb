@@ -93,7 +93,6 @@ pagination = Activity.add(:pagination, :api)
     raise "Not enough page views" unless json.next_url
     json = api.get("/" + json.next_url.split(/\//, 4)[-1])
     raise "Not enough page views" unless json.length > 3
-    puts json[3].to_json
     json[3]['request_id']
   }, :lookup => lambda{|api|
     json = api.get('/api/v1/users/self/page_views?per_page=1000000')

@@ -122,7 +122,7 @@ module Sinatra
         halt 500, error("Missing api host") unless session['api_host']
         session['activity'] = params['activity']
         session['activity_index'] = params['index']
-        return_url = "#{protocol}://#{request.host_with_port}/oauth_success"
+        return_url = "#{protocol}://#{request.host_with_port}/canvas_oauth"
         redirect to("#{session['api_host']}/login/oauth2/auth?client_id=#{oauth_config.consumer_key}&response_type=code&redirect_uri=#{CGI.escape(return_url)}")
       end
     end

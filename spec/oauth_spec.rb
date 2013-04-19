@@ -17,7 +17,7 @@ describe 'OAuth for API launches' do
   
   it "should require canvas oauth config if api-launch" do
     User.create(:user_id => '1234')
-    get "/launch/get_requests/0", {}, 'rack.session' => {'api_host' => 'canvas.tv', 'user_id' => '1234', 'key' => 'asdf', 'secret' => 'jkl'}
+    get "/launch/get_requests/0", {}, 'rack.session' => {'api_host' => 'http://canvas.tv', 'user_id' => '1234', 'key' => 'asdf', 'secret' => 'jkl'}
     last_response.should_not be_ok
     assert_error_page("Missing oauth config")
   end
@@ -25,15 +25,15 @@ describe 'OAuth for API launches' do
   it "should require api token if api-launch" do
     User.create(:user_id => '1234')
     canvas_config
-    get "/launch/get_requests/0", {}, 'rack.session' => {'api_host' => 'canvas.tv', 'user_id' => '1234', 'key' => 'asdf', 'secret' => 'jkl'}
+    get "/launch/get_requests/0", {}, 'rack.session' => {'api_host' => 'http://canvas.tv', 'user_id' => '1234', 'key' => 'asdf', 'secret' => 'jkl'}
     last_response.should be_redirect
-    last_response.location.should == "http://canvas.tv/login/oauth2/auth?client_id=#{@canvas_config.consumer_key}&response_type=code&redirect_uri=http%3A%2F%2Fexample.org%2Foauth_success"
+    last_response.location.should == "http://canvas.tv/login/oauth2/auth?client_id=#{@canvas_config.consumer_key}&response_type=code&redirect_uri=http%3A%2F%2Fexample.org%2Fcanvas_oauth"
   end
   
   it "should not redirect to api token on api-launch if already retrieved" do
     User.create(:user_id => '1234', :settings => {'access_token' => 'asdfyuiop'})
     canvas_config
-    get "/launch/get_requests/0", {}, 'rack.session' => {'api_host' => 'canvas.tv', 'user_id' => '1234', 'key' => 'asdf', 'secret' => 'jkl'}
+    get "/launch/get_requests/0", {}, 'rack.session' => {'api_host' => 'http://canvas.tv', 'user_id' => '1234', 'key' => 'asdf', 'secret' => 'jkl'}
     last_response.should be_ok
   end
   
@@ -48,7 +48,7 @@ describe 'OAuth for API launches' do
       canvas_config
       User.create(:user_id => '1234')
       Net::HTTP.any_instance.should_receive(:request).and_return(OpenStruct.new(:body => {:access_token => 'abc'}.to_json))
-      get "/canvas_oauth", {}, 'rack.session' => {'api_host' => 'canvas.tv', 'user_id' => '1234', 'activity' => 'get_requests', 'activity_index' => '0'}
+      get "/canvas_oauth", {}, 'rack.session' => {'api_host' => 'http://canvas.tv', 'user_id' => '1234', 'activity' => 'get_requests', 'activity_index' => '0'}
       last_response.should be_redirect
       last_response.location.should == "http://example.org/launch/get_requests/0"
       user = User.first(:user_id => '1234')
@@ -59,7 +59,7 @@ describe 'OAuth for API launches' do
       canvas_config
       User.create(:user_id => '1234')
       Net::HTTP.any_instance.should_receive(:request).and_return(OpenStruct.new(:body => {}.to_json))
-      get "/canvas_oauth", {}, 'rack.session' => {'api_host' => 'canvas.tv', 'user_id' => '1234', 'activity' => 'get_requests', 'activity_index' => '0'}
+      get "/canvas_oauth", {}, 'rack.session' => {'api_host' => 'http://canvas.tv', 'user_id' => '1234', 'activity' => 'get_requests', 'activity_index' => '0'}
       assert_error_page("There was a problem retrieving permission to access Canvas on your behalf. Without this permission we can't test your ability to use the Canvas API. Please reload the page and re-authorize to continue.")
     end
   end
