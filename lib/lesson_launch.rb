@@ -39,7 +39,8 @@ module Sinatra
             return error("Invalid tool launch - missing parameters")
           end
           session['user_id'] = params['tool_consumer_instance_guid'] + "." + params['context_id'] + "." + user_id
-          session['api_host'] = "https://" + (params['custom_canvas_api_domain'] || 'canvas.instructure.com')
+          ugly_host = params['tool_consumer_instance_guid'].split(/\./)[1..-1].join(".") if params['tool_consumer_instance_guid'] && params['tool_consumer_instance_guid'].match(/\./)
+          session['api_host'] = "https://" + (params['custom_canvas_api_domain'] || ugly_host || 'canvas.instructure.com')
           @user = User.first_or_create(:user_id => session['user_id'], :lti_config_id => tool_config.id)
           @user.settings ||= {}
           @user.settings['api_host'] ||= session['api_host']
