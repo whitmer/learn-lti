@@ -111,6 +111,7 @@ content_test = Activity.add(:content_test, :lti)
   args = {
     :embed_type => 'file',
     :url => 'http://www.bacon.com/bacon.docx',
+    :text => 'bacon.docx',
     :content_type => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
   }
   content_test.add_redirect_test :file, :lti_return => args, :explanation => <<-EOF
