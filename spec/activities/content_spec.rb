@@ -17,7 +17,7 @@ describe 'Content Extensions Activity' do
     return_url = html.css("input[name='launch_presentation_return_url']")[0]['value']
     rand_id = return_url.split(/\//)[-1]
     
-    get_with_session "/tool_return/content_test/4/#{rand_id}?embed_type=file&url=http%3A%2F%2Fwww.bacon.com%2Fbacon.docx&content_type=application%2Fvnd.openxmlformats-officedocument.wordprocessingml.document"
+    get_with_session "/tool_return/content_test/4/#{rand_id}?embed_type=file&text=bacon.docx&url=http%3A%2F%2Fwww.bacon.com%2Fbacon.docx&content_type=application%2Fvnd.openxmlformats-officedocument.wordprocessingml.document"
     html = Nokogiri::HTML(last_response.body)
     json = JSON.parse(html.css('#result_data').text)
     json['correct'].should == true
@@ -32,7 +32,7 @@ describe 'Content Extensions Activity' do
     return_url = html.css("input[name='launch_presentation_return_url']")[0]['value']
     rand_id = return_url.split(/\//)[-1]
     
-    get_with_session "/tool_return/content_test/4/#{rand_id}?embed_type=file&url=http%3A%2F%2Fwww.bacon.com%2Fbacon.docx&content_type=application%2Fvnd.openxmlformats-officedocument.wordprocessingml.document&friends=2&alt=hope"
+    get_with_session "/tool_return/content_test/4/#{rand_id}?embed_type=file&text=bacon.docx&url=http%3A%2F%2Fwww.bacon.com%2Fbacon.docx&content_type=application%2Fvnd.openxmlformats-officedocument.wordprocessingml.document&friends=2&alt=hope"
     html = Nokogiri::HTML(last_response.body)
     json = JSON.parse(html.css('#result_data').text)
     json['correct'].should == true

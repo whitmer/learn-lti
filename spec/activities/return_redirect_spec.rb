@@ -43,4 +43,47 @@ describe 'Return Redirect Activity' do
     json['correct'].should == false
   end
   
+  it "should handle multiple valid encodings" do
+    fake_launch({"farthest_for_return_redirect" => 10})
+    get_with_session "/launch/return_redirect/3", {}
+    post_with_session "/test/return_redirect/3", {'launch_url' => 'http://www.example.com/launch'}
+    html = Nokogiri::HTML(last_response.body)
+    html.css("input[name='launch_presentation_return_url']").length.should == 1
+    return_url = html.css("input[name='launch_presentation_return_url']")[0]['value']
+    rand_id = return_url.split(/\//)[-1]
+
+    msg = CGI.escape("Who's going to save you, Junior?!")
+    get_with_session "/tool_return/return_redirect/3/#{rand_id}?lti_errormsg=#{msg}"
+    html = Nokogiri::HTML(last_response.body)
+    json = JSON.parse(html.css('#result_data').text)
+    json['correct'].should == true
+
+
+    get_with_session "/launch/return_redirect/3", {}
+    post_with_session "/test/return_redirect/3", {'launch_url' => 'http://www.example.com/launch'}
+    html = Nokogiri::HTML(last_response.body)
+    html.css("input[name='launch_presentation_return_url']").length.should == 1
+    return_url = html.css("input[name='launch_presentation_return_url']")[0]['value']
+    rand_id = return_url.split(/\//)[-1]
+
+    msg = "Who%27s%20going%20to%20save%20you%2C%20Junior%3F!"    
+    get_with_session "/tool_return/return_redirect/3/#{rand_id}?lti_errormsg=#{msg}"
+    html = Nokogiri::HTML(last_response.body)
+    json = JSON.parse(html.css('#result_data').text)
+    json['correct'].should == true
+
+
+    get_with_session "/launch/return_redirect/3", {}
+    post_with_session "/test/return_redirect/3", {'launch_url' => 'http://www.example.com/launch'}
+    html = Nokogiri::HTML(last_response.body)
+    html.css("input[name='launch_presentation_return_url']").length.should == 1
+    return_url = html.css("input[name='launch_presentation_return_url']")[0]['value']
+    rand_id = return_url.split(/\//)[-1]
+
+    msg = "Who%27s+going+to+save+you%2C+Junior%3F%21"    
+    get_with_session "/tool_return/return_redirect/3/#{rand_id}?rand=1234&lti_errormsg=#{msg}"
+    html = Nokogiri::HTML(last_response.body)
+    json = JSON.parse(html.css('#result_data').text)
+    json['correct'].should == true
+  end
 end

@@ -36,6 +36,8 @@ describe 'Activity Rendering' do
               html.css("form#answer select[name='valid']").length.should == 1
             elsif test[:args][:pick_roles]
               html.css("form#answer ul li input[type='checkbox']").length.should > 1
+            elsif test[:args][:pick_return_types]
+              html.css("form#answer ul li input[type='checkbox']").length.should > 1
             else
               html.css("form#answer input[name='answer']").length.should == 1
             end

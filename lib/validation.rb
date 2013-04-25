@@ -9,7 +9,7 @@ module Sinatra
         answer = session["answer_for_#{params['activity']}_#{@index}"]
         correct = (answer && user_answer == answer)
         res = {}
-        res[:answer] = session["answer_for_#{params['activity']}_#{@index}"]
+        res[:answer] = answer
         res[:explanation] = "Incorrect parameters"
         res[:correct] = correct
         res[:error] = "Session lost" unless answer
