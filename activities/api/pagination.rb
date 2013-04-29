@@ -8,7 +8,7 @@ pagination = Activity.add(:pagination, :api)
     raise ApiError.new("You don't have enough calendar events. Go to your calendar in Canvas and add more calendar events, then come back here and try again.") if !json.next_url
   }, :lookup => lambda{|api|
     
-    json = api.get('/api/v1/calendar_events?all_events=true&per_page=1')
+    json = api.get('/api/v1/calendar_events?all_events=true&per_page=2')
     json.link
   }, :explanation => <<-EOF
     <p>Some API endpoints in Canvas use a technique called 
@@ -30,7 +30,7 @@ pagination = Activity.add(:pagination, :api)
     failing to check for pagination</i>.</p>
     <p>For this test, I want you to paste the string you get as the <code>Link</code>
     header value when making a Canvas API call to 
-    <code><%= @api_host %>/api/v1/users/self/page_views?per_page=1</code>. This header is
+    <code><%= @api_host %>/api/v1/users/self/page_views?per_page=2</code>. This header is
     what is parsed to get the URL for the next page of results.</p>
   EOF
   
