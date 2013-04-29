@@ -94,14 +94,14 @@ pagination = Activity.add(:pagination, :api)
     raise "Not enough calendar events" unless json.next_url
     json = api.get("/" + json.next_url.split(/\//, 4)[-1])
     raise "Not enough calendar events" unless json.length > 3
-    json[3]['id']
+    json[3]['created_at']
   }, :lookup => lambda{|api|
     json = api.get('/api/v1/calendar_events?all_events=true&per_page=10000')
     json = api.get("/" + json.next_url.split(/\//, 4)[-1])
     json[3]['url']
   }, :explanation => <<-EOF
     <p>Ok, let's put these skills to really good use. One of the calendar events
-    in your personal account has the <code>id</code> of 
+    in your personal account has the <code>created_at</code> of 
     <code class="setup_result">...</code>. Find this event and tell
     me the value of its <code>url</code> attribute.</p>
   EOF
