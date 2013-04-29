@@ -32,7 +32,7 @@ oauth = Activity.add(:oauth, :api)
     so <code>redirect_uri</code> doesn't make as much sense. For mobile
     apps using OAuth you should specify <code>urn:ietf:wg:oauth:2.0:oob</code>
     as the <code>redirect_uri</code> value. Then the user will be
-    redirected to <code>/login/oauth2/auth?code=&lt;code&gt;></code> on
+    redirected to <code>/login/oauth2/auth?code=&lt;code&gt;</code> on
     the Canvas domain, and you'll be responsible to strip the 
     <code>code</code> parameter out of this URL.</p>
     <p>For this test, and for all the tests in this activity,

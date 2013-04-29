@@ -4,10 +4,11 @@ pagination = Activity.add(:pagination, :api)
   EOF
   
   pagination.api_test :pagination_header, :setup => lambda{|api|
-    json = api.get('/api/v1/users/self/page_views?per_page=10000')
-    raise ApiError.new("Not enough page views. You need to spend more time in Canvas before you can pass this test.") if !json.next_url
+    json = api.get('/api/v1/calendar_events?all_events=true&per_page=100000')
+    raise ApiError.new("You don't have enough calendar events. Go to your calendar in Canvas and add more calendar events, then come back here and try again.") if !json.next_url
   }, :lookup => lambda{|api|
-    json = api.get('/api/v1/users/self/page_views')
+    
+    json = api.get('/api/v1/calendar_events?all_events=true&per_page=1')
     json.link
   }, :explanation => <<-EOF
     <p>Some API endpoints in Canvas use a technique called 
@@ -29,7 +30,7 @@ pagination = Activity.add(:pagination, :api)
     failing to check for pagination</i>.</p>
     <p>For this test, I want you to paste the string you get as the <code>Link</code>
     header value when making a Canvas API call to 
-    <code><%= @api_host %>/api/v1/users/self/page_views</code>. This header is
+    <code><%= @api_host %>/api/v1/users/self/page_views?per_page=1</code>. This header is
     what is parsed to get the URL for the next page of results.</p>
   EOF
   
@@ -68,7 +69,7 @@ pagination = Activity.add(:pagination, :api)
   EOF
   
   pagination.api_test :per_page, :lookup => lambda{|api|
-    api.get('/api/v1/users/self/page_views?per_page=1000000').length.to_s
+    api.get('/api/v1/calendar_events?all_events=true&per_page=1000000').length.to_s
   }, :explanation => <<-EOF
     <p>There's another option you should be aware of related to
     pagination, and that's the <code>per_page</code> parameter. This
@@ -84,23 +85,23 @@ pagination = Activity.add(:pagination, :api)
     or some other value, depending on the endpoint.</p>
     <p>For this test I want you to tell me what's the maximum number 
     of records you can get back on a single page when using the 
-    <a href="https://canvas.instructure.com/doc/api/users.html#method.page_views.index">user
-    page views endpoint</a>.</p>
+    <a href="https://canvas.instructure.com/doc/api/calendar_events.html#method.calendar_events_api.index">calendar
+    events endpoint</a>.</p>
   EOF
   
-  pagination.api_test :find_page_view, :setup => lambda{|api|
-    json = api.get('/api/v1/users/self/page_views?per_page=1000000')
-    raise "Not enough page views" unless json.next_url
+  pagination.api_test :find_event, :setup => lambda{|api|
+    json = api.get('/api/v1/calendar_events?all_events=true&per_page=10000')
+    raise "Not enough calendar events" unless json.next_url
     json = api.get("/" + json.next_url.split(/\//, 4)[-1])
-    raise "Not enough page views" unless json.length > 3
-    json[3]['request_id']
+    raise "Not enough calendar events" unless json.length > 3
+    json[3]['id']
   }, :lookup => lambda{|api|
-    json = api.get('/api/v1/users/self/page_views?per_page=1000000')
+    json = api.get('/api/v1/calendar_events?all_events=true&per_page=10000')
     json = api.get("/" + json.next_url.split(/\//, 4)[-1])
     json[3]['url']
   }, :explanation => <<-EOF
-    <p>Ok, let's put these skills to really good use. One of the page views
-    in your personal account has the <code>request_id</code> of 
-    <code class="setup_result">...</code>. Find this page view and tell
+    <p>Ok, let's put these skills to really good use. One of the calendar events
+    in your personal account has the <code>id</code> of 
+    <code class="setup_result">...</code>. Find this event and tell
     me the value of its <code>url</code> attribute.</p>
   EOF

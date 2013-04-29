@@ -71,6 +71,7 @@ describe 'Non-get_with_session Request Tests' do
     get_with_session "/launch/non_get/2", {}
     answer = "your house"
     Api.any_instance.should_receive(:get).with('/api/v1/users/self/profile').and_return({'id' => 1, 'primary_email' => 'bob@example.com', 'calendar' => {'ics' => '999'}})
+    Api.any_instance.should_receive(:get).with('/api/v1/calendar_events?context_codes[]=user_1&type=event&start_date=2009-01-01&end_date=2009-01-01').and_return([])
     Api.any_instance.should_receive(:post).and_return({'id' => 1, 'location_name' => answer})
     post_with_session "/setup/non_get/2"
   end
