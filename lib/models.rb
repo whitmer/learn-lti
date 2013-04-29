@@ -36,10 +36,10 @@ class User
     self.settings["farthest_for_#{activity.to_s}"] || -1
   end
   
-  def regenerate_access_token
+  def regenerate_access_token(args={})
     self.settings ||= {}
     self.settings['fake_token'] = nil
-    self.settings['fake_secret'] = nil
+    self.settings['fake_secret'] = nil unless args[:except] == :secret
     self.settings['fake_code'] = nil
     set_missing_tokens
   end

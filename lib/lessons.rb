@@ -65,7 +65,7 @@ module Sinatra
         if session['access_denied']
           url += "error=access_denied"
         else
-          @user.regenerate_access_token
+          @user.regenerate_access_token(:except => :secret)
           @user.settings.delete('fake_token')
           @user.settings['last_redirect_uri'] = params['redirect_uri']
           url += "code=#{@user.settings['fake_code']}"
@@ -88,7 +88,7 @@ module Sinatra
         elsif params['code'] != @user.settings['fake_code']
           return error("Incorrect code")
         end
-        @user.regenerate_access_token
+        @user.regenerate_access_token(:except => :secret)
         @user.save
         {
           :access_token => @user.settings['fake_token']

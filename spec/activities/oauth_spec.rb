@@ -137,13 +137,18 @@ describe 'OAuth Tests' do
   it "should succeed when token is correctly retrieved for step 3" do
     fake_launch({'farthest_for_oauth' => 10})
     get_with_session "/launch/oauth/3", {}
+    last_secret = @user.reload.settings['fake_secret']
+    last_secret.should_not be_nil
     post_with_session "/oauth_start/oauth/3", {'url' => 'http://www.example.com/login'}
+    @user.reload.settings['fake_secret'].should == last_secret
     last_response.location.should == 'http://www.example.com/login'
     path = "/login/oauth2/auth?client_id=#{@user.id}&response_type=code&redirect_uri=#{CGI.escape("http://www.example.com/auth")}"
     get_with_session path
+    @user.reload.settings['fake_secret'].should == last_secret
     @user.reload
     last_response.location.should == "http://www.example.com/auth?code=#{@user.settings['fake_code']}"
     post_with_session "/login/oauth2/token", {'redirect_uri' => "http://www.example.com/auth", 'client_id' => @user.id.to_s, 'client_secret' => @user.settings['fake_secret'], 'code' => @user.settings['fake_code']}
+    @user.reload.settings['fake_secret'].should == last_secret
     json = JSON.parse(last_response.body)
     json['access_token'].should == @user.reload.settings['fake_token']
     post_with_session "/validate/oauth/3", {'answer' => json['access_token']}
