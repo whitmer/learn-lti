@@ -148,7 +148,7 @@ content_test = Activity.add(:content_test, :lti)
     when teachers go to add the tool to their course they're presented
     with the picker, which then takes care of inserting the specific URL
     for them. Much better user experience. If you're really interested
-    here's a blog post with more details.</p>
+    <a href="http://brianwhitmer.blogspot.com/2013/04/a-better-youtube-app-using-lti.html">here's a blog post with more details</a>.</p>
     <p>Anyway, LTI return values only have a couple parameters, listed
     below. Side note: it's assumed that any launch URL you return will be launched
     with the same consumer key and secret that were used in the initial

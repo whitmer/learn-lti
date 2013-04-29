@@ -47,6 +47,12 @@ non_get = Activity.add(:non_get, :api)
   non_get.api_test :delete_requests, :setup => lambda{|api|
     user = api.get('/api/v1/users/self/profile')
     user_code = "user_#{user['id']}"
+    list = api.get("/api/v1/calendar_events?context_codes[]=#{user_code}&type=event&start_date=2009-01-01&end_date=2009-01-01")
+    list.each do |e|
+      if e['title'] == 'Delete Me'
+        res = api.delete('/api/v1/calendar_events/' + e['id'].to_s)
+      end
+    end
     obj = api.post('/api/v1/calendar_events', {
       'calendar_event[context_code]' => user_code, 
       'calendar_event[title]' => "Delete Me",
@@ -65,7 +71,7 @@ non_get = Activity.add(:non_get, :api)
     "#{user['primary_email']}_#{user['calendar']['ics']}"    
   }, :explanation => <<-EOF
     <p>DELETE requests should be more of the same at this point.
-    Let's have you delete the calendar event I secret created on
+    Let's have you delete the calendar event I secretly created on
     your personal calendar. You know, the one with the <code>id</code>
     of <code><span class='setup_result'>...</span></code>. Tell me the value of
     the <code>location_name</code> attribute returned for the event
