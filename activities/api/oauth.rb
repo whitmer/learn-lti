@@ -113,8 +113,11 @@ oauth = Activity.add(:oauth, :api)
     response. If the logout fails for any reason you'll get a 400-level status,
     along with a <code>message</code> attribute in the response JSON explaining
     the issue.</p>
-    <p>For this test just log out of the fake Canvas API using the information
-    provided in the test box. Tell me the HTTP status number of the response.</p>
+    <p>For this test just 
+    <a href="https://canvas.instructure.com/doc/api/file.oauth.html">log out of the fake Canvas API</a> 
+    using the information
+    provided in the test box (use the Logout URL, not the Test URL). 
+    Tell me the HTTP status number of the response.</p>
   EOF
   
   oauth.local_api_test :oauth_expired_token, :allow_expired => true, :pick_expired => true, :iterations => 3, :explanation => <<-EOF
