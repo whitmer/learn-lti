@@ -114,7 +114,7 @@ files = Activity.add(:file_uploads, :api)
     next_path = "/api/v1/folders/#{root['id']}/files"
     while next_path
       files = api.get(next_path)
-      file = files.detect{|f| f['size'] > 100 && f['name'] == 'call_him_dr_jones.doll' && f['content_type'] == 'application/short-round' }
+      file = files.detect{|f| f['size'] > 100 && f['display_name'] == 'call_him_dr_jones.doll' }
       return file['id'].to_s if file
       raise ApiError.new("Couldn't find the file") unless files.next_url
       next_path = "/" + files.next_url.split(/\//, 4)[-1]
