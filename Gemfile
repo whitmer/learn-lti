@@ -10,6 +10,7 @@ gem 'dm-postgres-adapter'
 gem 'erubis'
 gem 'dm-types', "1.2.0"
 gem 'nokogiri'
+gem 'canvas-api'
 
 
 group :development do
