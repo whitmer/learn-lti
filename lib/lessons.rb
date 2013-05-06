@@ -144,13 +144,14 @@ module Sinatra
             :error => Samplers.random(2) == 0,
             :lookups => (Samplers.random(3) + 1),
             :message_index => Samplers.random(5),
+            :ref_code => rand(99999).to_s,
             :id => rand(99999)
           }
           @user.save
           {
             :id => @user.settings["settings_for_file_upload"][:id],
             :upload_status => 'pending',
-            :status_url => host + "/api/v1/file_status/#{params['user_id']}/#{params['code']}"
+            :status_url => host + "/api/v1/file_status/#{params['user_id']}/#{params['code']}?ref=#{@user.settings["settings_for_file_upload"][:ref_code]}"
           }.to_json
         else
           if params['name'] != 'this_whole_place_is_slithering.txt'
@@ -218,7 +219,7 @@ module Sinatra
       app.get '/api/v1/file_status/:user_id/:code' do
         load_user
         opts = @user.settings['settings_for_file_upload']
-        if !opts || opts['error'] == nil || !opts['lookups'] || !opts['message_index'] || !opts['id']
+        if !opts || opts['error'] == nil || !opts['lookups'] || !opts['message_index'] || !opts['id'] || opts['ref_code'] != params['ref']
           # ERROR!
           return {
             :api_error => true,
