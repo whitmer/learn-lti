@@ -4,6 +4,7 @@ module Sinatra
       app.helpers Main::Helpers
     
       app.get '/' do
+        session['sessioned'] = true
         erb :index
       end
       
@@ -31,6 +32,11 @@ module Sinatra
         end
       end
       
+      def error(msg)
+        @message = msg
+        erb :error
+      end
+      
       def load_user(ignore_token=false)
         @user = session['user_id'] && User.first(:user_id => session['user_id'])
         @user ||= !ignore_token && User.first(:fake_token => params['access_token']) if params['access_token']
@@ -40,6 +46,7 @@ module Sinatra
           load_token unless ignore_token
         end
         if !@user
+          session['sessioned'] = true
           halt 400, error("No user information found")
         end
         @user.settings ||= {}

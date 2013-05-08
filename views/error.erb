@@ -1,0 +1,20 @@
+<div class='row'>
+  <div class='span6 offset2' style="margin-top: 50px;">
+    <h1>Error</h1>
+    <p id="message"><%= @message %></p>
+    <p id="explanation" style="display: none;">
+      It looks like your browser is currently set to block iframe cookies, which
+      will interfere with the ability for this site to function. This is currently
+      the default setting in Safari and sometimes in Firefox as well. Your options
+      are to disable the cookie option, or go to 
+      <a href="/" target="_blank">the main page for this site in a new tab</a>
+      before trying to relaunch the lesson.
+    </p>
+  </div>
+</div>
+<script>
+var elem = document.getElementById("message")
+if(elem.innerHTML.match(/No user information found/) && document.cookie == "") {
+  document.getElementById('explanation').style.display = 'inline';
+}
+</script>
