@@ -5,8 +5,6 @@ This is a basic and simple LTI Tool Consumer that uses the
 It can be tied into an LMS for grade writeback as students
 progress through the materials.
 
-TODO: add support for grade writeback to the LMS
-
 To get this running in your development environment, check out the repo then:
 
     bundle install

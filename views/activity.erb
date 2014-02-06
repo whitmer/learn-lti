@@ -9,7 +9,7 @@
         <% else %>
           <li class=""><a href="/launch/<%= params['activity'] %>/<%= @index - 1 %>">&laquo;</a></li>
         <% end %>
-        <li class=""><a>Lesson <%= @index + 1 %></a></li>
+        <li class=""><a>Section <%= @index + 1 %></a></li>
         <% if @next_enabled %>
           <li class=""><a href="/launch/<%= params['activity'] %>/<%= @index + 1 %>">&raquo;</a></li>
         <% else %>
