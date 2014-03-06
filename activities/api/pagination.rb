@@ -4,7 +4,7 @@ pagination = Activity.add(:pagination, :api)
   EOF
   
   pagination.api_test :pagination_header, :setup => lambda{|api|
-    json = api.get('/api/v1/calendar_events?all_events=true&per_page=100000')
+    json = api.get('/api/v1/calendar_events?all_events=true&per_page=2')
     raise ApiError.new("You don't have enough calendar events. Go to your calendar in Canvas and add more calendar events, then come back here and try again.") if !json.next_url
   }, :lookup => lambda{|api|
     
