@@ -40,6 +40,7 @@
               Launch URL:
               <input type="text" name="launch_url" value="<%= session['launch_url'] %>" style="width: 200px;"/>
             </label>
+            <div style="font-size: 10px;">Remember non-https iframes will not launch by default in many browsers.</div>
             <button type="submit" class='btn'>Launch</button>
           </form>
           <iframe id="app_launch" frameborder="0" style="border: 2px solid #333; width: 100%; height: 300px;" src="about:blank"></iframe>
@@ -150,6 +151,7 @@
             Launch URL:
             <input type="text" name="url" value="<%= session['oauth_url'] %>" style="width: 200px;"/>
           </label>
+          <div style="font-size: 10px;">Remember non-https iframes will not launch by default in many browsers.</div>
           <button type="submit" class='btn'>Launch</button>
         </form>
         <iframe id="app_launch" frameborder="0" style="border: 2px solid #333; width: 100%; height: 300px;" src="about:blank"></iframe>
