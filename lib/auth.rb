@@ -6,7 +6,6 @@ module Sinatra
       app.helpers Auth::Helpers
       
       app.get "/login" do
-        return "#{request.scheme}://#{request.host_with_port}/login_success"
         request_token = consumer.get_request_token(:oauth_callback => "#{request.scheme}://#{request.host_with_port}/login_success")
         if request_token.token && request_token.secret
           session[:oauth_token] = request_token.token
