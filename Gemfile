@@ -1,3 +1,4 @@
+ruby '2.1.1'
 source 'https://rubygems.org'
 
 gem 'sinatra'
@@ -8,7 +9,7 @@ gem 'dm-migrations'
 gem 'dm-aggregates'
 gem 'dm-postgres-adapter'
 gem 'erubis'
-gem 'dm-types', "1.2.0"
+gem 'dm-types'
 gem 'nokogiri'
 gem 'canvas-api'
 
