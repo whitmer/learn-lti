@@ -35,11 +35,12 @@ module Sinatra
         if provider.valid_request?(request)
           user_id = params['custom_canvas_user_id'] || params['user_id']
           # find or create user/activity record, including grade passback url
-          if !params['tool_consumer_instance_guid'] || !params['context_id'] || !user_id
-            return error("Invalid tool launch - missing parameters")
+          if !params['tool_consumer_instance_guid'] || !params['context_id'] || !user_id || !params['launch_presentation_return_url']
+            return error("Invalid tool launch - missing parameters (tool_consumer_instance_guid, user_id and context_id, and launch_presentation_return_url are required)")
           end
           session['user_id'] = params['tool_consumer_instance_guid'] + "." + params['context_id'] + "." + user_id
-          ugly_host = params['tool_consumer_instance_guid'].split(/\./)[1..-1].join(".") if params['tool_consumer_instance_guid'] && params['tool_consumer_instance_guid'].match(/\./)
+          session['is_canvas'] = params['tool_consumer_info_product_family_code'] == 'canvas'
+          ugly_host = params['tool_consumer_instance_guid'].split(/\./)[1..-1].join(".") if session['is_canvas'] && params['tool_consumer_instance_guid'] && params['tool_consumer_instance_guid'].match(/\./)
           session['api_host'] = "https://" + (params['custom_canvas_api_domain'] || ugly_host || 'canvas.instructure.com')
           @user = User.first_or_create(:user_id => session['user_id'], :lti_config_id => tool_config.id)
           @user.settings ||= {}
@@ -50,7 +51,6 @@ module Sinatra
           session["key"] = Samplers.random_string(true)
           session["secret"] = Samplers.random_string(true)
           session['name'] = params['lis_person_name_full']
-          session['is_canvas'] = params['tool_consumer_info_product_family_code'] == 'canvas'
           # check if they're a teacher or not
           # session["permission_for_#{params['custom_canvas_course_id']}"] = 'edit' if provider.roles.include?('instructor') || provider.roles.include?('contentdeveloper') || provider.roles.include?('urn:lti:instrole:ims/lis/administrator') || provider.roles.include?('administrator')
           
@@ -68,7 +68,7 @@ module Sinatra
             redirect to("/launch/#{params['activity']}/0")
           end
         else
-          return error("Invalid tool launch - invalid parameters")
+          return error("Invalid tool launch - invalid parameters, please check your key and secret")
         end
       end
       
