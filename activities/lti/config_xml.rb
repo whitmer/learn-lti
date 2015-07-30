@@ -12,11 +12,11 @@ config_xml = Activity.add(:config_xml, :lti)
     XML file and hosting it on your own server. If you need custom
     options that's not the end of the world, but it does make it a little
     harder to get it listed in our 
-    <a href="https://lti-examples.heroku.com">app directory</a>.</p>
+    <a href="https://www.eduappcenter.com/">app directory</a>.</p>
     <p>I could teach you about the IMS LTI XML format, but examples
     are probably much easier, since neither one of us is all that
     concerned about the namespaces. Even easier than that would be
-    <a href="https://lti-examples.heroku.com/build_xml.html">a tool to build
+    <a href="https://www.eduappcenter.com/tools/xml_builder#/new">a tool to build
     the XML for you</a>, right? Done and done.</p>
     <p>Let's make sure you can build a barebones XML config. I don't
     care if you use our builder or write it yourself, but 
