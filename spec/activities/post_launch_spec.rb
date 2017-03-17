@@ -37,11 +37,11 @@ describe 'post_with_session Launch Activity' do
     post_with_session "/validate/post_launch/0", {'answer' => 'ice-cream'}
     post_with_session "/validate/post_launch/0", {'answer' => 'basic-lti-launch-request'}
     json = JSON.parse(last_response.body)
-    json['error'].should == 'Session lost'
+    json['error'].should == 'Session lost, can\'t validate'
     json['next'].should == nil
     post_with_session "/validate/post_launch/0", {'answer' => nil}
     json = JSON.parse(last_response.body)
-    json['error'].should == 'Session lost'
+    json['error'].should == 'Session lost, can\'t validate'
     json['next'].should == nil
   end
   
@@ -120,7 +120,7 @@ describe 'post_with_session Launch Activity' do
       post_with_session "/validate/post_launch/5", {'role' => nil}
       json = JSON.parse(last_response.body)
       json['correct'].should == false
-      json['error'].should == "Session lost"
+      json['error'].should == "Session lost, can\'t validate"
       
       post_with_session "/test/post_launch/5", {'launch_url' => 'http://www.example.com/launch'}
       answer = session["answer_for_post_launch_5"]

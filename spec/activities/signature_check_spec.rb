@@ -22,7 +22,7 @@ describe 'Signature Check Activity' do
     post_with_session "/validate/signature_check/2", {'valid' => 'Yes'}
     json = JSON.parse(last_response.body)
     json['correct'].should == false
-    json['error'].should == 'Session lost'
+    json['error'].should == 'Session lost, can\'t validate'
   end
   
   it "should fail with the correct answer as answer instead of valid" do

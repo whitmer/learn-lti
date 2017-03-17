@@ -12,7 +12,7 @@ module Sinatra
         res[:answer] = answer
         res[:explanation] = "Incorrect parameters"
         res[:correct] = correct
-        res[:error] = "Session lost" unless answer
+        res[:error] = "Session lost before tool return" unless answer
         @res = handle_result(res)
         erb :redirect_result
       end
@@ -146,7 +146,7 @@ module Sinatra
           correct = valid ? (params['valid'] == "Yes") : (params['valid'] == "No")
         end
         res[:correct] = correct
-        res[:error] = "Session lost" if !answer && !res[:error] && res[:valid] == nil
+        res[:error] = "Session lost, can't validate" if !answer && !res[:error] && res[:valid] == nil
         res[:correct] = false if res[:error]
         handle_result(res).to_json
       end
